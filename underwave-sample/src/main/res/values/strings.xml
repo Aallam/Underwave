@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Underwave Sample</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="nav_single">Single</string>
+    <string name="nav_list">List</string>
+    <string name="toolbar_clear">Clear Cache</string>
+    <string name="toast_clear">Cache Cleared!</string>
 </resources>

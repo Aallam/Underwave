@@ -1,6 +1,7 @@
 package com.aallam.underwave.sample
 
 import android.app.Application
+import com.aallam.underwave.Underwave
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.list
 
@@ -11,6 +12,7 @@ class UnderwaveSample : Application() {
     override fun onCreate() {
         super.onCreate()
         this.pokedex = loadPokedex()
+        Underwave.debug(true)
     }
 
     private fun loadPokedex(): List<Pokemon> {

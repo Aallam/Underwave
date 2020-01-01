@@ -328,10 +328,6 @@
     "image": "https://img.pokemondb.net/artwork/magneton.jpg"
   },
   {
-    "name": "Farfetch",
-    "image" : "https://img.pokemondb.net/artwork/farfetch'd.jpg"
-  },
-  {
     "name": "Doduo",
     "image": "https://img.pokemondb.net/artwork/doduo.jpg"
   },
@@ -485,7 +481,7 @@
   },
   {
     "name": "Mr. Mime",
-    "image": "https://img.pokemondb.net/artwork/mr. mime.jpg"
+    "image": "https://img.pokemondb.net/artwork/mr-mime.jpg"
   },
   {
     "name": "Scyther",

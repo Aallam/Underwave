@@ -2,33 +2,35 @@ package com.aallam.underwave.image
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import com.aallam.underwave.storage.disk.CompressFormat
+import com.aallam.underwave.cache.disk.CompressFormat
 import java.io.BufferedInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 
-actual typealias Bitmap = Bitmap
+internal actual typealias Bitmap = Bitmap
 
 /**
  * Scale the bitmap to the given dimensions and compress format.
  */
-internal fun Bitmap.scale(width: Int, height: Int, format: CompressFormat = CompressFormat.JPEG): Bitmap? {
-    if (width == 0 || height == 0) return this
+internal fun Bitmap.scale(
+    dimension: Dimension, format: CompressFormat = CompressFormat.JPEG
+): Bitmap? {
+    if (dimension.isEmpty()) return this
     val stream = ByteArrayOutputStream()
     compress(format, 100, stream)
     val inputStream: BufferedInputStream = stream.toByteArray().inputStream().buffered()
-    return inputStream.scale(width, height)
+    return inputStream.scale(dimension)
 }
 
 /**
  * Scale a bitmap to the given width and height.
  */
-internal fun InputStream.scale(width: Int, height: Int): Bitmap? {
+internal fun InputStream.scale(dimension: Dimension): Bitmap? {
     return BitmapFactory.Options().run {
         mark(available()) // mark to reset later
         inJustDecodeBounds = true
         BitmapFactory.decodeStream(this@scale, null, this) // get original bitmap
-        inSampleSize = calculateInSampleSize(width, height)
+        inSampleSize = calculateInSampleSize(dimension)
         inJustDecodeBounds = false
         reset()
         BitmapFactory.decodeStream(this@scale, null, this) // decode bitmap with inSampleSize set
@@ -40,7 +42,8 @@ internal fun InputStream.scale(width: Int, height: Int): Bitmap? {
  * For example, inSampleSize == 4 returns an image that is 1/4 the width/height of the original.
  * This function calculates the sample size value corresponding the given width and height.
  */
-private fun BitmapFactory.Options.calculateInSampleSize(width: Int, height: Int): Int {
+private fun BitmapFactory.Options.calculateInSampleSize(dimension: Dimension): Int {
+    val (width: Int, height: Int) = dimension
     if (outHeight > height || outWidth > width) {
         var inSampleSize = 1
         val halfHeight: Int = outHeight / 2
