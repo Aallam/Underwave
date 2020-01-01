@@ -27,7 +27,8 @@ internal actual class DiskCache actual constructor(
     private val diskLruCache: DiskLruCache = DiskLruCache.open(directory, VERSION, COUNT, size)
 
     override fun get(key: String): Bitmap? {
-        val snapshot: DiskLruCache.Snapshot = diskLruCache[key] ?: return null
+        val urlHash = key.md5()
+        val snapshot: DiskLruCache.Snapshot = diskLruCache[urlHash] ?: return null
         snapshot.use {
             val input: InputStream = snapshot.getInputStream(0) ?: return null
             val buffIn = BufferedInputStream(input, IO_BUFFER_SIZE)
@@ -36,7 +37,8 @@ internal actual class DiskCache actual constructor(
     }
 
     override fun put(key: String, value: Bitmap) {
-        val editor: DiskLruCache.Editor = diskLruCache.edit(key) ?: return
+        val urlHash = key.md5()
+        val editor: DiskLruCache.Editor = diskLruCache.edit(urlHash) ?: return
         try {
             val isSuccess: Boolean = writeBitmapToDisk(value, editor)
             if (isSuccess) editor.flushAndCommit() else editor.abortEdit()

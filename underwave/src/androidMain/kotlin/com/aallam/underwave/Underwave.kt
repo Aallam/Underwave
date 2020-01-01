@@ -117,6 +117,15 @@ actual class Underwave private constructor(context: Context) {
         }
     }
 
+    /**
+     * Clear all caches.
+     */
+    fun clear() {
+        memoryCache.clear()
+        diskCache.clear()
+        imageViewMap.clear()
+    }
+
     actual companion object {
         actual val PLATFORM: String = "Android"
         private const val THREAD_NAME = "Underwave Thread"
