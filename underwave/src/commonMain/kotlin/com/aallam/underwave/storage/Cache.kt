@@ -3,7 +3,7 @@ package com.aallam.underwave.storage
 /**
  * Cache that holds references to a number of values.
  */
-interface Cache<K, V> {
+internal interface Cache<K, V> {
 
     /**
      * Returns the value for [key] if it exists in the cache.

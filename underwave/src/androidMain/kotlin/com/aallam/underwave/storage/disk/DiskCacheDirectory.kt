@@ -8,7 +8,7 @@ import java.io.File
  * Check if media is mounted or storage is built-in, if so, try and use external cache directory
  * otherwise use internal cache dir.
  */
-fun Context.getDiskCacheDirectory(uniqueName: String): File {
+internal fun Context.getDiskCacheDirectory(uniqueName: String = "underwave"): File {
     val cachePath: String = getCachePath(this)
     return File("$cachePath${File.separator}$uniqueName")
 }

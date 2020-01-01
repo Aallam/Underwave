@@ -1,4 +1,4 @@
-package com.aallam.underwave
+package com.aallam.underwave.image
 
 /**
  * A representation of a bitmap image.

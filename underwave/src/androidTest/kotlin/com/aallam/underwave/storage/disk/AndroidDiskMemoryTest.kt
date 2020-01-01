@@ -1,6 +1,7 @@
 package com.aallam.underwave.storage.disk
 
 import android.content.Context
+import android.graphics.Bitmap
 import androidx.test.core.app.ApplicationProvider
 import org.junit.Test
 import org.junit.runner.RunWith

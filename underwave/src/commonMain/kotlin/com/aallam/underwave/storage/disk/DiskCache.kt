@@ -1,6 +1,6 @@
 package com.aallam.underwave.storage.disk
 
-import com.aallam.underwave.Bitmap
+import com.aallam.underwave.image.Bitmap
 import com.aallam.underwave.storage.Cache
 
 /**
@@ -11,7 +11,7 @@ import com.aallam.underwave.storage.Cache
  * @param compressFormat the format of the compressed images.
  * @param compressQuality  Hint to the compressor, 0-100.
  **/
-expect class DiskCache(
+internal expect class DiskCache(
     directory: Directory,
     size: Long,
     compressFormat: CompressFormat = CompressFormat.JPEG,

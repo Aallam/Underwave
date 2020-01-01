@@ -1,5 +1,6 @@
 package com.aallam.underwave.storage.memory
 
+import android.graphics.Bitmap
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

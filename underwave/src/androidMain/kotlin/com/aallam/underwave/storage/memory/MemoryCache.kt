@@ -1,10 +1,10 @@
 package com.aallam.underwave.storage.memory
 
 import android.util.LruCache
-import com.aallam.underwave.Bitmap
+import com.aallam.underwave.image.Bitmap
 import com.aallam.underwave.storage.Cache
 
-actual class MemoryCache actual constructor(
+internal actual class MemoryCache actual constructor(
     size: Long
 ) : Cache<String, Bitmap> {
 

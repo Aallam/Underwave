@@ -1,6 +1,6 @@
 package com.aallam.underwave.storage.memory
 
-import com.aallam.underwave.Bitmap
+import com.aallam.underwave.image.Bitmap
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull

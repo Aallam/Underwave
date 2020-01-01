@@ -6,6 +6,6 @@ import kotlin.test.assertTrue
 class UnderwaveAndroidTest {
     @Test
     fun testHello() {
-        assertTrue("Android" in Underwave.platform)
+        assertTrue("Android" in Underwave.PLATFORM)
     }
 }

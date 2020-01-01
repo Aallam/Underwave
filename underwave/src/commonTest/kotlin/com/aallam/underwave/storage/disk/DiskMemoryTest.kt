@@ -1,15 +1,15 @@
 package com.aallam.underwave.storage.disk
 
-import com.aallam.underwave.Bitmap
+import com.aallam.underwave.image.Bitmap
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 abstract class DiskMemoryTest {
-    protected abstract val diskCache: DiskCache
-    protected abstract val mockImage: Bitmap
-    protected abstract val compressedImageSize: Long
+    internal abstract val diskCache: DiskCache
+    internal abstract val mockImage: Bitmap
+    internal abstract val compressedImageSize: Long
 
     @Test
     fun testPutAndGetSuccess() {

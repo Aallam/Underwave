@@ -1,7 +1,7 @@
 package com.aallam.underwave.storage.disk
 
 import android.graphics.BitmapFactory
-import com.aallam.underwave.Bitmap
+import com.aallam.underwave.image.Bitmap
 import com.aallam.underwave.storage.Cache
 import com.jakewharton.disklrucache.DiskLruCache
 import java.io.BufferedInputStream
@@ -17,7 +17,7 @@ import java.io.InputStream
  * @param compressFormat the format of the compressed images.
  * @param compressQuality  Hint to the compressor, 0-100.
  **/
-actual class DiskCache actual constructor(
+internal actual class DiskCache actual constructor(
     directory: Directory,
     size: Long,
     private val compressFormat: CompressFormat,
