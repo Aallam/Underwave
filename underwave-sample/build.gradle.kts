@@ -1,5 +1,4 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
-import dependency.kotlin.Kotlinx
 
 plugins {
     id("com.android.application")
@@ -25,7 +24,7 @@ android {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation(Kotlinx("serialization-runtime"))
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.14.0")
     implementation("androidx.core:core-ktx:1.1.0")
     implementation("androidx.appcompat:appcompat:1.1.0")
     implementation("androidx.constraintlayout:constraintlayout:1.1.3")
