@@ -1,7 +1,7 @@
 package com.aallam.underwave
 
 import com.aallam.underwave.image.ImageView
-import com.aallam.underwave.load.LoadRequest
+import com.aallam.underwave.load.Request
 
 /**
  * A singleton to present a simple static interface for building requests.
@@ -13,6 +13,17 @@ expect class Underwave {
      *
      * @param imageUrl image url to be loaded.
      * @param imageView image view to load the image into.
+     * @return object representing the requested operation.
      */
-    fun load(imageUrl: String, imageView: ImageView): LoadRequest
+    fun load(imageUrl: String, imageView: ImageView): Request
+
+    /**
+     * Clears as much memory and as possible and disk cache.
+     */
+    fun clear()
+
+    /**
+     * Clears all caches and stops all operations.
+     */
+    fun shutdown()
 }

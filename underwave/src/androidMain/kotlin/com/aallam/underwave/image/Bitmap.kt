@@ -1,19 +1,23 @@
 package com.aallam.underwave.image
 
 import android.graphics.Bitmap
+import android.graphics.Bitmap.CompressFormat
 import android.graphics.BitmapFactory
-import com.aallam.underwave.cache.disk.CompressFormat
 import java.io.BufferedInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 
+/**
+ * A representation of an image bitmap.
+ */
 internal actual typealias Bitmap = Bitmap
 
 /**
  * Scale the bitmap to the given dimensions and compress format.
  */
 internal fun Bitmap.scale(
-    dimension: Dimension, format: CompressFormat = CompressFormat.JPEG
+    dimension: Dimension,
+    format: CompressFormat = CompressFormat.JPEG
 ): Bitmap? {
     if (dimension.isEmpty()) return this
     val stream = ByteArrayOutputStream()
@@ -42,7 +46,7 @@ internal fun InputStream.scale(dimension: Dimension): Bitmap? {
  * For example, inSampleSize == 4 returns an image that is 1/4 the width/height of the original.
  * This function calculates the sample size value corresponding the given width and height.
  */
-private fun BitmapFactory.Options.calculateInSampleSize(dimension: Dimension): Int {
+internal fun BitmapFactory.Options.calculateInSampleSize(dimension: Dimension): Int {
     val (width: Int, height: Int) = dimension
     if (outHeight > height || outWidth > width) {
         var inSampleSize = 1

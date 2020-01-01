@@ -1,11 +1,7 @@
 package com.aallam.underwave
 
-import kotlin.test.Test
-import kotlin.test.assertTrue
+internal class UnderwaveAndroidTest : UnderwaveTest() {
 
-class UnderwaveAndroidTest {
-    @Test
-    fun testHello() {
-        assertTrue("Android" in Underwave.PLATFORM)
-    }
+    override val underwave: Underwave
+        get() = Underwave(imageCache, downloader, viewManager)
 }

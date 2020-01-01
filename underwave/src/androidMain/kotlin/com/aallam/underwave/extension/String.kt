@@ -9,6 +9,7 @@ import java.security.MessageDigest
  * @return MD5 hash corresponding to the given string
  */
 internal fun String.md5(): String {
-    val md = MessageDigest.getInstance("MD5")
-    return BigInteger(1, md.digest(toByteArray())).toString(16).padStart(32, '0')
+    val messageDigest: MessageDigest = MessageDigest.getInstance("MD5")
+    val digest: ByteArray = messageDigest.digest(toByteArray())
+    return BigInteger(1, digest).toString(16).padStart(32, '0')
 }

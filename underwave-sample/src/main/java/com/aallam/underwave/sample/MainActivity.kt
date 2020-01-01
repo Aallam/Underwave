@@ -15,7 +15,6 @@ import com.aallam.underwave.sample.sample.ListFragment
 import com.aallam.underwave.sample.sample.SingleFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewPager: ViewPager

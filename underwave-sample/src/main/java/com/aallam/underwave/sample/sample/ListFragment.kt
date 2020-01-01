@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aallam.underwave.Underwave
-import com.aallam.underwave.load.LoadRequest
+import com.aallam.underwave.load.Request
 import com.aallam.underwave.sample.Pokemon
 import com.aallam.underwave.sample.R
 import com.aallam.underwave.sample.extension.pokedex
@@ -17,7 +17,8 @@ import kotlinx.android.synthetic.main.fragment_item.view.*
 class ListFragment : Fragment() {
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_item_list, container, false)
@@ -49,7 +50,7 @@ class ItemAdapter(private val values: List<Pokemon>) :
 
     inner class ViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
 
-        private var previousRequest: LoadRequest? = null
+        private var previousRequest: Request? = null
 
         fun bind(pokemon: Pokemon) {
             previousRequest?.cancel()

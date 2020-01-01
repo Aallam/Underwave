@@ -8,14 +8,17 @@ import android.util.DisplayMetrics
  * @param width the height dimension.
  * @param height the width dimension.
  */
-internal data class Dimension(val width: Int, val height: Int) {
+internal actual data class Dimension actual constructor(
+    val width: Int,
+    val height: Int
+) {
 
     /**
      * Check if any of the dimension equals 0.
      *
      * @return true if width or height equals 0, otherwise false.
      */
-    fun isEmpty(): Boolean {
+    actual fun isEmpty(): Boolean {
         return width == 0 || height == 0
     }
 }
