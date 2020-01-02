@@ -1,7 +1,7 @@
 package com.aallam.underwave.internal.cache.memory
 
 import android.util.LruCache
-import com.aallam.underwave.image.Bitmap
+import com.aallam.underwave.internal.image.Bitmap
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK

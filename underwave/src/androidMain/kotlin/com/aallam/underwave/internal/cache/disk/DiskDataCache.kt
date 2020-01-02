@@ -3,10 +3,11 @@ package com.aallam.underwave.internal.cache.disk
 import android.content.Context
 import android.graphics.Bitmap.CompressFormat
 import android.graphics.BitmapFactory
-import com.aallam.underwave.extension.log
-import com.aallam.underwave.extension.md5
-import com.aallam.underwave.image.Bitmap
 import com.aallam.underwave.internal.cache.Cache
+import com.aallam.underwave.internal.extension.bytesToKilobytes
+import com.aallam.underwave.internal.extension.log
+import com.aallam.underwave.internal.extension.md5
+import com.aallam.underwave.internal.image.Bitmap
 import com.jakewharton.disklrucache.DiskLruCache
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
@@ -30,6 +31,7 @@ internal actual class DiskDataCache(
         val urlHash = key.md5()
         val snapshot: DiskLruCache.Snapshot = diskLruCache[urlHash] ?: return null
         snapshot.use {
+            log("get from disk cache: $key")
             val inputStream: InputStream = snapshot.getInputStream(0) ?: return null
             val bufferedInputStream = BufferedInputStream(inputStream, IO_BUFFER_SIZE)
             return BitmapFactory.decodeStream(bufferedInputStream)
@@ -95,11 +97,13 @@ internal actual class DiskDataCache(
     }
 
     override fun clear() {
+        log("clear disk: ${diskLruCache.size().bytesToKilobytes} kb")
         val directory: Directory = diskLruCache.directory
         val maxSize: Long = diskLruCache.maxSize
         diskLruCache.maxSize = 0 // for full delete maxsize must be 0 otherwise will trim to size.
         diskLruCache.delete() // delete will close the cache.
-        this.diskLruCache = openDiskLruCache(directory, maxSize) // delete closes the cache, re-open.
+        this.diskLruCache =
+            openDiskLruCache(directory, maxSize) // delete closes the cache, re-open.
     }
 
     /**

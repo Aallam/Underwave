@@ -1,11 +1,11 @@
 package com.aallam.underwave.internal.view
 
 import android.os.Handler
-import com.aallam.underwave.image.Bitmap
-import com.aallam.underwave.image.Dimension
-import com.aallam.underwave.image.ImageView
-import com.aallam.underwave.image.dimension
-import com.aallam.underwave.image.scale
+import com.aallam.underwave.internal.image.Bitmap
+import com.aallam.underwave.internal.image.Dimension
+import com.aallam.underwave.internal.image.ImageView
+import com.aallam.underwave.internal.image.dimension
+import com.aallam.underwave.internal.image.scale
 import com.aallam.underwave.internal.view.impl.ImageViewManager
 import com.aallam.underwave.load.impl.LoadRequest
 import io.mockk.MockKAnnotations
@@ -68,7 +68,7 @@ internal class ViewManagerTest {
     @Test
     fun testHandler() {
         every { viewMap[imageView] } returns imageURL
-        viewManager.postHandler(loadRequest, bitmap)
+        viewManager.load(loadRequest, bitmap)
         verify { handler.post(any()) }
     }
 

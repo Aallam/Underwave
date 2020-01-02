@@ -1,6 +1,6 @@
 package com.aallam.underwave
 
-import com.aallam.underwave.image.ImageView
+import com.aallam.underwave.internal.image.ImageView
 import com.aallam.underwave.load.Request
 
 /**

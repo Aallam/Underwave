@@ -1,19 +1,20 @@
 package com.aallam.underwave.internal.network.impl
 
-import com.aallam.underwave.extension.log
-import com.aallam.underwave.image.Bitmap
-import com.aallam.underwave.image.Dimension
-import com.aallam.underwave.image.scale
+import android.graphics.BitmapFactory
+import com.aallam.underwave.internal.BitmapLoader
 import com.aallam.underwave.internal.cache.ImageCache
+import com.aallam.underwave.internal.executor.SourceExecutor
+import com.aallam.underwave.internal.extension.log
+import com.aallam.underwave.internal.image.Bitmap
+import com.aallam.underwave.internal.image.Dimension
 import com.aallam.underwave.internal.network.Downloader
-import com.aallam.underwave.internal.network.NetworkExecutor
 import com.aallam.underwave.internal.view.ViewManager
 import com.aallam.underwave.load.impl.LoadRequest
+import java.io.BufferedInputStream
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.concurrent.ExecutorService
-import java.util.concurrent.Future
 
 /**
  * Utility class to download an image using its URL.
@@ -21,6 +22,7 @@ import java.util.concurrent.Future
 internal actual class ImageDownloader(
     private val imageCache: ImageCache,
     private val viewManager: ViewManager,
+    private val bitmapLoader: BitmapLoader,
     private val executorService: ExecutorService
 ) : Downloader {
 
@@ -30,36 +32,25 @@ internal actual class ImageDownloader(
      * @param loadRequest load request to be applied.
      * @return cancellable load request
      */
-    override fun download(loadRequest: LoadRequest, display: Dimension): LoadRequest {
-        val request: Future<*> = executorService.submit {
+    override fun download(loadRequest: LoadRequest, display: Dimension) {
+        loadRequest.request = executorService.submit {
             if (viewManager.isViewReused(loadRequest)) return@submit
             val url: String = loadRequest.imageUrl
-            download(loadRequest.imageUrl, display)
-                ?.also { bitmap -> imageCache.put(url, bitmap) }
-                ?.let { bitmap -> viewManager.postHandler(loadRequest, bitmap) }
-        }
-        return loadRequest.apply { this.request = request }
-    }
-
-    /**
-     * Download an image using its url and scale it to the given width and height.
-     *
-     * @param url image url
-     * @param dimension component dimensions
-     * @return bitmap corresponding to the downloaded image.
-     */
-    private fun download(url: String, dimension: Dimension): Bitmap? {
-        var urlConnection: HttpURLConnection? = null
-        return try {
-            urlConnection = URL(url).openConnection() as HttpURLConnection
-            urlConnection.inputStream.buffered().use { inputStream ->
-                inputStream.scale(dimension)
+            var urlConnection: HttpURLConnection? = null
+            try {
+                urlConnection = URL(url).openConnection() as HttpURLConnection
+                val inputStream: BufferedInputStream = urlConnection.inputStream.buffered()
+                val raw: Bitmap = BitmapFactory.decodeStream(inputStream)
+                bitmapLoader.scale(raw, display, imageCache.bitmapPool, loadRequest) { bitmap ->
+                    imageCache.put(url, bitmap)
+                    viewManager.load(loadRequest, bitmap)
+                }
+            } catch (ex: IOException) {
+                log("Error while downloading $this", ex)
+                throw ex
+            } finally {
+                urlConnection?.disconnect()
             }
-        } catch (ex: IOException) {
-            log("Error while downloading $this", ex)
-            throw ex
-        } finally {
-            urlConnection?.disconnect()
         }
     }
 
@@ -80,11 +71,13 @@ internal actual class ImageDownloader(
         fun newInstance(
             imageCache: ImageCache,
             viewManager: ViewManager,
-            executorService: ExecutorService = NetworkExecutor.newInstance()
+            bitmapLoader: BitmapLoader,
+            executorService: ExecutorService = SourceExecutor
         ): ImageDownloader {
             return ImageDownloader(
                 imageCache = imageCache,
                 viewManager = viewManager,
+                bitmapLoader = bitmapLoader,
                 executorService = executorService
             )
         }

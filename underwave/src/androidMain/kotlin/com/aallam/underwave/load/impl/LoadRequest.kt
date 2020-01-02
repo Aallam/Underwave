@@ -1,7 +1,7 @@
 package com.aallam.underwave.load.impl
 
-import com.aallam.underwave.extension.log
-import com.aallam.underwave.image.ImageView
+import com.aallam.underwave.internal.extension.log
+import com.aallam.underwave.internal.image.ImageView
 import com.aallam.underwave.load.Request
 import java.lang.ref.WeakReference
 import java.util.concurrent.Future
@@ -18,8 +18,10 @@ internal actual class LoadRequest(
 
     override fun cancel() {
         request?.let {
-            log("cancel request: $imageUrl")
-            it.cancel(false)
+            if (!it.isDone) {
+                log("cancel request: $imageUrl")
+                it.cancel(false)
+            }
         }
     }
 

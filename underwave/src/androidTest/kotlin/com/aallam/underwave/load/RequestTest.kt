@@ -1,6 +1,6 @@
 package com.aallam.underwave.load
 
-import com.aallam.underwave.image.ImageView
+import com.aallam.underwave.internal.image.ImageView
 import com.aallam.underwave.load.impl.LoadRequest
 import io.mockk.MockKAnnotations
 import io.mockk.impl.annotations.MockK

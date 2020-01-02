@@ -1,4 +1,4 @@
-package com.aallam.underwave.extension
+package com.aallam.underwave.internal.extension
 
 import android.util.Log
 import com.aallam.underwave.Underwave.Companion.DEBUG

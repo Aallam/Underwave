@@ -1,6 +1,5 @@
-package com.aallam.underwave.internal.cache.impl
+package com.aallam.underwave.internal.cache
 
-import com.aallam.underwave.internal.cache.ImageCache
 import com.aallam.underwave.internal.cache.disk.DiskDataCache
 import com.aallam.underwave.internal.cache.memory.MemoryCache
 

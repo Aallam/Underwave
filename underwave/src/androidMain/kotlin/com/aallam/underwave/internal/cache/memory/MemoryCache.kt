@@ -1,36 +1,44 @@
 package com.aallam.underwave.internal.cache.memory
 
-import android.util.LruCache
-import com.aallam.underwave.image.Bitmap
 import com.aallam.underwave.internal.cache.Cache
+import com.aallam.underwave.internal.cache.memory.bitmap.BitmapLruCache
+import com.aallam.underwave.internal.cache.memory.bitmap.BitmapPool
+import com.aallam.underwave.internal.extension.kilobytesToBytes
+import com.aallam.underwave.internal.extension.log
+import com.aallam.underwave.internal.image.Bitmap
 
 /**
  * A memory [Cache] implantation that holds references to a limited number of values.
  *
- * @param size the maximum sum of the sizes of the entries in the cache in bytes.
+ * @param bitmapPool bitmap pool to hold references to bitmaps.
+ * @param bitmapLruCache bitmap LRU cache.
  */
-internal actual class MemoryCache(
-    private val lruCache: LruCache<String, Bitmap>
+internal actual class MemoryCache actual constructor(
+    val bitmapPool: BitmapPool,
+    private val bitmapLruCache: BitmapLruCache
 ) : Cache<String, Bitmap> {
 
     override fun get(key: String): Bitmap? {
-        return lruCache[key]
+        return bitmapLruCache.get(key)
     }
 
     override fun put(key: String, value: Bitmap) {
-        lruCache.put(key, value)
+        bitmapLruCache.put(key, value)
     }
 
     override fun contains(key: String): Boolean {
-        return lruCache.get(key) != null
+        return bitmapLruCache.get(key) != null
     }
 
     override fun size(): Long {
-        return lruCache.size() * 1024L // convert to bytes
+        return bitmapLruCache.size().kilobytesToBytes
     }
 
     override fun clear() {
-        lruCache.evictAll()
+        log("clear memory: ${size()} kb")
+        bitmapLruCache.evictAll()
+        log("clear bitmap pool: ${bitmapPool.size} elements")
+        bitmapPool.clear()
     }
 
     companion object {
@@ -39,19 +47,12 @@ internal actual class MemoryCache(
          * Creates a new [MemoryCache] object.
          */
         @JvmStatic
-        fun newInstance(size: Long): MemoryCache {
-            val lruCache: LruCache<String, Bitmap> = newLruCache(size)
-            return MemoryCache(lruCache)
-        }
-
-        private fun newLruCache(maxCacheSize: Long): LruCache<String, Bitmap> {
-            val sizeInKilobytes: Int = (maxCacheSize / 1024).toInt()
-            return object : LruCache<String, Bitmap>(sizeInKilobytes) {
-                override fun sizeOf(key: String, bitmap: Bitmap): Int {
-                    // the cache size will be measured in kilobytes rather than number of items.
-                    return bitmap.byteCount / 1024
-                }
-            }
+        fun newInstance(bitmapPool: BitmapPool, size: Int): MemoryCache {
+            val bitmapLruCache: BitmapLruCache = BitmapLruCache.newInstance(size, bitmapPool)
+            return MemoryCache(
+                bitmapPool = bitmapPool,
+                bitmapLruCache = bitmapLruCache
+            )
         }
     }
 }

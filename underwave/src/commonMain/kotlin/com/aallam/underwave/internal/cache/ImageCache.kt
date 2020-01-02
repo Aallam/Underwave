@@ -1,11 +1,15 @@
 package com.aallam.underwave.internal.cache
 
-import com.aallam.underwave.image.Bitmap
+import com.aallam.underwave.internal.cache.memory.bitmap.BitmapPool
+import com.aallam.underwave.internal.image.Bitmap
+import com.aallam.underwave.load.impl.LoadRequest
 
 /**
  * Image cache repository.
  */
 internal interface ImageCache {
+
+    val bitmapPool: BitmapPool
 
     /**
      * Cache given url and bitmap in the memory and disk cache.
@@ -30,4 +34,9 @@ internal interface ImageCache {
      * Clears as much memory and as possible and disk cache.
      */
     fun clear()
+
+    /**
+     * Load an image from cache, calls [onSuccess] if exists, otherwise calls [onFailure]
+     */
+    fun load(loadRequest: LoadRequest, onSuccess: (Bitmap) -> Unit, onFailure: () -> Unit)
 }

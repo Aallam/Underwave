@@ -1,8 +1,8 @@
 package com.aallam.underwave
 
 import android.content.Context
-import com.aallam.underwave.image.ImageView
 import com.aallam.underwave.internal.cache.ImageCache
+import com.aallam.underwave.internal.image.ImageView
 import com.aallam.underwave.internal.network.Downloader
 import com.aallam.underwave.internal.view.ViewManager
 import com.aallam.underwave.load.Request
@@ -31,14 +31,12 @@ actual class Underwave internal constructor(
 
         val loadRequest: LoadRequest = LoadRequest.newInstance(imageUrl, imageView)
 
-        // load from the cache.
-        imageCache[imageUrl]?.let { bitmap ->
-            viewManager.loadBitmapIntoImageView(loadRequest, bitmap)
-            return loadRequest
-        }
+        imageCache.load(
+            loadRequest,
+            { viewManager.load(loadRequest, it) },
+            { downloader.download(loadRequest, viewManager.display) })
 
-        // otherwise, download.
-        return downloader.download(loadRequest, viewManager.display)
+        return loadRequest
     }
 
     /**

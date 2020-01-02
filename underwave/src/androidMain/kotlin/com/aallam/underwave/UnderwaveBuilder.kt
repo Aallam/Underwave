@@ -1,8 +1,11 @@
 package com.aallam.underwave
 
 import android.content.Context
+import com.aallam.underwave.internal.BitmapLoader
 import com.aallam.underwave.internal.cache.ImageCache
-import com.aallam.underwave.internal.cache.impl.ImageDataCache
+import com.aallam.underwave.internal.cache.ImageDataCache
+import com.aallam.underwave.internal.cache.memory.bitmap.BitmapDataPool
+import com.aallam.underwave.internal.cache.memory.bitmap.BitmapPool
 import com.aallam.underwave.internal.network.Downloader
 import com.aallam.underwave.internal.network.impl.ImageDownloader
 import com.aallam.underwave.internal.view.ViewManager
@@ -12,27 +15,8 @@ import com.aallam.underwave.internal.view.impl.ImageViewManager
  * A builder class for setting default structural classes for Underwave to use.
  * */
 internal data class UnderwaveBuilder(
-    private var context: Context,
-    private var imageCache: ImageDataCache? = null,
-    private var downloader: ImageDownloader? = null,
-    private var viewManager: ViewManager? = null
+    private val context: Context
 ) {
-
-    /**
-     * Sets the [ImageDataCache].
-     *
-     * @param imageCache image cache to be set.
-     * @return This builder.
-     */
-    fun imageCache(imageCache: ImageDataCache) = apply { this.imageCache = imageCache }
-
-    /**
-     * Sets the [ImageDownloader].
-     *
-     * @param downloader data downloader to be set.
-     * @return This builder.
-     */
-    fun downloader(downloader: ImageDownloader) = apply { this.downloader = downloader }
 
     /**
      * Build an [Underwave].
@@ -40,9 +24,11 @@ internal data class UnderwaveBuilder(
      * @return an [Underwave] instance
      */
     fun build(): Underwave {
-        val cache: ImageCache = imageCache ?: ImageDataCache.newInstance(context)
-        val viewManager: ViewManager = viewManager ?: ImageViewManager.newInstance(context)
-        val downloader: Downloader = downloader ?: ImageDownloader.newInstance(cache, viewManager)
+        val loader = BitmapLoader()
+        val bitmapPool: BitmapPool = BitmapDataPool.newInstance()
+        val cache: ImageCache = ImageDataCache.newInstance(context, bitmapPool)
+        val viewManager: ViewManager = ImageViewManager.newInstance(context, bitmapPool, loader)
+        val downloader: Downloader = ImageDownloader.newInstance(cache, viewManager, loader)
         return Underwave(cache, downloader, viewManager)
     }
 }

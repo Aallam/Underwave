@@ -1,8 +1,8 @@
 package com.aallam.underwave.internal.view
 
-import com.aallam.underwave.image.Bitmap
-import com.aallam.underwave.image.Dimension
-import com.aallam.underwave.image.ImageView
+import com.aallam.underwave.internal.image.Bitmap
+import com.aallam.underwave.internal.image.Dimension
+import com.aallam.underwave.internal.image.ImageView
 import com.aallam.underwave.load.impl.LoadRequest
 
 /**
@@ -23,15 +23,10 @@ internal interface ViewManager {
     /**
      * Post to the handler the bitmap loading into the image view operation.
      */
-    fun postHandler(loadRequest: LoadRequest, bitmap: Bitmap)
+    fun load(loadRequest: LoadRequest, bitmap: Bitmap)
 
     /**
      * Check if an image has already has been loaded to the [ImageView] or reused.
      */
     fun isViewReused(loadRequest: LoadRequest): Boolean
-
-    /**
-     * Load a given [Bitmap] to the requested [ImageView].
-     */
-    fun loadBitmapIntoImageView(loadRequest: LoadRequest, bitmap: Bitmap)
 }

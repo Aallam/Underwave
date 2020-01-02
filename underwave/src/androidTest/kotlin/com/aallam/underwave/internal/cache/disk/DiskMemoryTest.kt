@@ -2,7 +2,7 @@ package com.aallam.underwave.internal.cache.disk
 
 import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat
-import com.aallam.underwave.extension.md5
+import com.aallam.underwave.internal.extension.md5
 import com.aallam.underwave.internal.cache.disk.DiskDataCache.Companion.openDiskLruCache
 import com.jakewharton.disklrucache.DiskLruCache
 import io.mockk.Called

@@ -1,4 +1,4 @@
-package com.aallam.underwave.image
+package com.aallam.underwave.internal.image
 
 import android.util.DisplayMetrics
 

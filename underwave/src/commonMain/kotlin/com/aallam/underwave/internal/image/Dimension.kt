@@ -1,4 +1,4 @@
-package com.aallam.underwave.image
+package com.aallam.underwave.internal.image
 
 /**
  * A class to encapsulate the width and height of a component.

@@ -1,6 +1,6 @@
 package com.aallam.underwave.internal.network
 
-import com.aallam.underwave.image.Dimension
+import com.aallam.underwave.internal.image.Dimension
 import com.aallam.underwave.load.impl.LoadRequest
 
 /**
@@ -14,7 +14,7 @@ internal interface Downloader {
      * @param loadRequest load request to be applied.
      * @return cancellable load request
      */
-    fun download(loadRequest: LoadRequest, display: Dimension): LoadRequest
+    fun download(loadRequest: LoadRequest, display: Dimension)
 
     /**
      * Initiates an orderly shutdown in which previously submitted

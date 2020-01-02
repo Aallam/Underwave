@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.aallam.underwave.Underwave
+import com.aallam.underwave.extension.load
 import com.aallam.underwave.load.Request
 import com.aallam.underwave.sample.Pokemon
 import com.aallam.underwave.sample.R
@@ -55,8 +55,7 @@ class ItemAdapter(private val values: List<Pokemon>) :
         fun bind(pokemon: Pokemon) {
             previousRequest?.cancel()
             this.view.pokeName.text = pokemon.name
-            this.previousRequest =
-                Underwave.with(view.context).load(pokemon.image, view.pokemonImage)
+            this.previousRequest = view.pokemonImage.load(pokemon.image)
         }
     }
 }

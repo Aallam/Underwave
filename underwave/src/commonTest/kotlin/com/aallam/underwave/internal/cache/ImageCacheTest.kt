@@ -1,8 +1,7 @@
 package com.aallam.underwave.internal.cache
 
-import com.aallam.underwave.image.Bitmap
+import com.aallam.underwave.internal.image.Bitmap
 import com.aallam.underwave.internal.cache.disk.DiskDataCache
-import com.aallam.underwave.internal.cache.impl.ImageDataCache
 import com.aallam.underwave.internal.cache.memory.MemoryCache
 import io.mockk.MockKAnnotations
 import io.mockk.Runs

@@ -1,8 +1,8 @@
 package com.aallam.underwave
 
-import com.aallam.underwave.image.Bitmap
-import com.aallam.underwave.image.ImageView
-import com.aallam.underwave.internal.cache.impl.ImageDataCache
+import com.aallam.underwave.internal.image.Bitmap
+import com.aallam.underwave.internal.image.ImageView
+import com.aallam.underwave.internal.cache.ImageDataCache
 import com.aallam.underwave.internal.network.impl.ImageDownloader
 import com.aallam.underwave.internal.view.ViewManager
 import com.aallam.underwave.load.impl.LoadRequest

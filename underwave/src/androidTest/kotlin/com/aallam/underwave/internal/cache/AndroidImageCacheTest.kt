@@ -1,6 +1,5 @@
 package com.aallam.underwave.internal.cache
 
-import com.aallam.underwave.internal.cache.impl.ImageDataCache
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 

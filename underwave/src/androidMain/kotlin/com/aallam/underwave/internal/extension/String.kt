@@ -1,4 +1,4 @@
-package com.aallam.underwave.extension
+package com.aallam.underwave.internal.extension
 
 import java.math.BigInteger
 import java.security.MessageDigest
