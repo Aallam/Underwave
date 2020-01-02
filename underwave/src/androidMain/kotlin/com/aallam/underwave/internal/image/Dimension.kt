@@ -1,7 +1,5 @@
 package com.aallam.underwave.internal.image
 
-import android.util.DisplayMetrics
-
 /**
  * A class to encapsulate the width and height of a component.
  *
@@ -25,6 +23,3 @@ internal actual data class Dimension actual constructor(
 
 internal val ImageView.dimension: Dimension
     get() = Dimension(width, height)
-
-internal val DisplayMetrics.dimension: Dimension
-    get() = Dimension(widthPixels, heightPixels)

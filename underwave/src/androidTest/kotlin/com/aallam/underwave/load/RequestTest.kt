@@ -3,37 +3,35 @@ package com.aallam.underwave.load
 import com.aallam.underwave.internal.image.ImageView
 import com.aallam.underwave.load.impl.LoadRequest
 import io.mockk.MockKAnnotations
-import io.mockk.impl.annotations.MockK
+import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import io.mockk.unmockkAll
 import io.mockk.verify
+import kotlinx.coroutines.Job
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import java.lang.ref.WeakReference
-import java.util.concurrent.Future
 
-internal class RequestTest {
+internal actual class RequestTest {
 
-    @MockK
-    lateinit var imageView: ImageView
+    lateinit var request: Request
     @RelaxedMockK
-    lateinit var future: Future<*>
-
-    private val request: Request
-        get() = LoadRequest("URL", WeakReference(imageView)).apply {
-            this.request = future
-        }
+    lateinit var job: Job
 
     @Before
     fun init() {
         MockKAnnotations.init(this)
+        val imageView: ImageView = mockk()
+        request = LoadRequest("url", WeakReference(imageView), job)
     }
 
     @Test
-    fun testCancel() {
+    actual fun testCancel() {
+        every { job.isActive } returns true
         request.cancel()
-        verify { future.cancel(any()) }
+        verify { job.cancel() }
     }
 
     @After

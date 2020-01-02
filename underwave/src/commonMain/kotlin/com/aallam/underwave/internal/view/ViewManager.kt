@@ -1,7 +1,6 @@
 package com.aallam.underwave.internal.view
 
 import com.aallam.underwave.internal.image.Bitmap
-import com.aallam.underwave.internal.image.Dimension
 import com.aallam.underwave.internal.image.ImageView
 import com.aallam.underwave.load.impl.LoadRequest
 
@@ -9,11 +8,6 @@ import com.aallam.underwave.load.impl.LoadRequest
  * View operations handling.
  */
 internal interface ViewManager {
-
-    /**
-     * Current device's screen dimensions.
-     */
-    val display: Dimension
 
     /**
      * Views mapped to URLs.

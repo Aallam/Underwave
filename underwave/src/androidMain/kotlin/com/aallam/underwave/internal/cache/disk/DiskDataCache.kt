@@ -1,18 +1,21 @@
 package com.aallam.underwave.internal.cache.disk
 
 import android.content.Context
-import android.graphics.Bitmap.CompressFormat
 import android.graphics.BitmapFactory
+import com.aallam.underwave.internal.async.UnderwaveDispatchers
 import com.aallam.underwave.internal.cache.Cache
 import com.aallam.underwave.internal.extension.bytesToKilobytes
 import com.aallam.underwave.internal.extension.log
 import com.aallam.underwave.internal.extension.md5
 import com.aallam.underwave.internal.image.Bitmap
+import com.aallam.underwave.internal.image.CompressFormat
 import com.jakewharton.disklrucache.DiskLruCache
-import java.io.BufferedInputStream
-import java.io.BufferedOutputStream
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.io.IOException
-import java.io.InputStream
 
 /**
  * Disk [Cache] implementation using a bounded amount of space on a filesystem.
@@ -24,36 +27,28 @@ import java.io.InputStream
 internal actual class DiskDataCache(
     private var diskLruCache: DiskLruCache,
     private val compressFormat: CompressFormat,
-    private val compressQuality: Int
+    private val compressQuality: Int,
+    private val dispatcher: CoroutineDispatcher
 ) : DiskCache {
 
-    override fun get(key: String): Bitmap? {
-        val urlHash = key.md5()
-        val snapshot: DiskLruCache.Snapshot = diskLruCache[urlHash] ?: return null
-        snapshot.use {
-            log("get from disk cache: $key")
-            val inputStream: InputStream = snapshot.getInputStream(0) ?: return null
-            val bufferedInputStream = BufferedInputStream(inputStream, IO_BUFFER_SIZE)
-            return BitmapFactory.decodeStream(bufferedInputStream)
+    override suspend fun get(key: String): Bitmap? {
+        return withContext(dispatcher) {
+            val hash = key.md5()
+            diskLruCache[hash]?.use { snapshot ->
+                log("get from disk cache: $key")
+                snapshot.getInputStream(0)?.buffered()?.let { inputStream ->
+                    BitmapFactory.decodeStream(inputStream)
+                }
+            }
         }
     }
 
-    override fun put(key: String, value: Bitmap) {
-        if (contains(key)) return
-        val urlHash = key.md5()
-        val editor: DiskLruCache.Editor = diskLruCache.edit(urlHash) ?: return
-        try {
-            log("write $key to cache: $urlHash")
-            val isSuccess: Boolean = writeBitmapToDisk(value, editor)
-            if (isSuccess) editor.flushAndCommit() else editor.abortEdit()
-        } catch (e: IOException) {
-            editor.abortEdit()
+    override suspend fun put(key: String, value: Bitmap): Unit = coroutineScope<Unit> {
+        launch(dispatcher) {
+            val hash = key.md5()
+            log("write $key to cache: $hash")
+            diskLruCache.edit(hash)?.let { editor -> writeBitmapToDisk(editor, value) }
         }
-    }
-
-    override fun contains(key: String): Boolean {
-        val hashedKey = key.md5()
-        return diskLruCache[hashedKey] != null
     }
 
     /**
@@ -61,15 +56,18 @@ internal actual class DiskDataCache(
      *
      * @param bitmap Image to be saved.
      * @param editor DiskLruCache editor.
-     * @return true if successfully wrote to the disk.
      */
     private fun writeBitmapToDisk(
-        bitmap: Bitmap,
-        editor: DiskLruCache.Editor
-    ): Boolean {
-        return editor.newOutputStream(0).use {
-            val outputStream = BufferedOutputStream(it, IO_BUFFER_SIZE)
-            bitmap.compress(compressFormat, compressQuality, outputStream)
+        editor: DiskLruCache.Editor,
+        bitmap: Bitmap
+    ) {
+        try {
+            val isSuccess: Boolean = editor.newOutputStream(0).use {
+                bitmap.compress(compressFormat, compressQuality, it.buffered())
+            }
+            if (isSuccess) editor.flushAndCommit() else editor.abortEdit()
+        } catch (e: IOException) {
+            editor.abortEdit()
         }
     }
 
@@ -96,14 +94,22 @@ internal actual class DiskDataCache(
         return diskLruCache.size()
     }
 
-    override fun clear() {
+    override suspend fun clear() {
         log("clear disk: ${diskLruCache.size().bytesToKilobytes} kb")
         val directory: Directory = diskLruCache.directory
         val maxSize: Long = diskLruCache.maxSize
         diskLruCache.maxSize = 0 // for full delete maxsize must be 0 otherwise will trim to size.
-        diskLruCache.delete() // delete will close the cache.
-        this.diskLruCache =
-            openDiskLruCache(directory, maxSize) // delete closes the cache, re-open.
+        reset(directory, maxSize)
+    }
+
+    /**
+     * Delete cache, delete operation will close the cache, thus re-open it.
+     */
+    private suspend fun reset(directory: Directory, size: Long): Unit = coroutineScope<Unit> {
+        launch(dispatcher) {
+            diskLruCache.delete()
+            diskLruCache = DiskLruCache.open(directory, VERSION, COUNT, size)
+        }
     }
 
     /**
@@ -116,7 +122,6 @@ internal actual class DiskDataCache(
     companion object {
         private const val VERSION = 1
         private const val COUNT = 1
-        private const val IO_BUFFER_SIZE = 8 * 1024 // 8kb
 
         private val DEFAULT_COMPRESS_FORMAT = CompressFormat.JPEG
         private const val DEFAULT_COMPRESS_QUALITY = 70
@@ -125,21 +130,21 @@ internal actual class DiskDataCache(
          * Creates a new [DiskDataCache] object.
          */
         @JvmStatic
-        fun newInstance(context: Context, size: Long): DiskDataCache {
-            val directory: Directory = context.getDiskCacheDirectory()
-            val diskLruCache: DiskLruCache = openDiskLruCache(directory, size)
-            return DiskDataCache(
+        fun newInstance(
+            context: Context,
+            size: Long,
+            dispatcher: CoroutineDispatcher = UnderwaveDispatchers.IO
+        ): DiskDataCache = runBlocking {
+            val diskLruCache = withContext(dispatcher) {
+                val directory: Directory = context.getDiskCacheDirectory()
+                DiskLruCache.open(directory, VERSION, COUNT, size)
+            }
+            DiskDataCache(
                 diskLruCache = diskLruCache,
                 compressFormat = DEFAULT_COMPRESS_FORMAT,
-                compressQuality = DEFAULT_COMPRESS_QUALITY
+                compressQuality = DEFAULT_COMPRESS_QUALITY,
+                dispatcher = dispatcher
             )
-        }
-
-        /**
-         * Opens the cache in [Directory], creating a cache if none exists there.
-         */
-        internal fun openDiskLruCache(directory: Directory, size: Long): DiskLruCache {
-            return DiskLruCache.open(directory, VERSION, COUNT, size)
         }
     }
 }

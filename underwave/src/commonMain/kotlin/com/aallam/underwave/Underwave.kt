@@ -18,6 +18,15 @@ expect class Underwave {
     fun load(imageUrl: String, imageView: ImageView): Request
 
     /**
+     * A suspendable method to load an image to an [ImageView] using the caller's coroutine scope.
+     *
+     * @param imageUrl image url to be loaded.
+     * @param imageView image view to load the image into.
+     * @return object representing the requested operation.
+     */
+    suspend fun insert(imageUrl: String, imageView: ImageView): Request
+
+    /**
      * Clears as much memory and as possible and disk cache.
      */
     fun clear()

@@ -2,6 +2,7 @@ package com.aallam.underwave.internal.cache.memory.bitmap
 
 import android.graphics.BitmapFactory
 import com.aallam.underwave.internal.image.Bitmap
+import com.aallam.underwave.internal.image.Config
 import java.lang.ref.SoftReference
 
 /**
@@ -30,7 +31,6 @@ internal actual class BitmapDataPool(
         // inBitmap only works with mutable bitmaps, so force the decoder to
         // return mutable bitmaps.
         options.inMutable = true
-
         // Try to find a bitmap to use for inBitmap.
         getReusableBitmap(options)?.let { inBitmap ->
             // If a suitable bitmap has been found, set it as the value of inBitmap.
@@ -39,14 +39,13 @@ internal actual class BitmapDataPool(
     }
 
     /**
-     * @param options - BitmapFactory.Options with out* options populated
+     * @param options - populated [BitmapFactory.Options]
      * @return Bitmap that case be used for inBitmap
      */
-    private fun getReusableBitmap(options: BitmapFactory.Options): android.graphics.Bitmap? {
+    private fun getReusableBitmap(options: BitmapFactory.Options): Bitmap? {
         if (bitmapsSet.isEmpty()) return null
         synchronized(bitmapsSet) {
-            val iterator: MutableIterator<SoftReference<android.graphics.Bitmap>> =
-                bitmapsSet.iterator()
+            val iterator: MutableIterator<SoftReference<Bitmap>> = bitmapsSet.iterator()
             while (iterator.hasNext()) {
                 iterator.next().get()?.let { item ->
                     if (item.isMutable) {
@@ -85,11 +84,11 @@ internal actual class BitmapDataPool(
     /**
      * Return the byte usage per pixel of a bitmap based on its configuration.
      */
-    private fun bytesPerPixel(config: android.graphics.Bitmap.Config): Int {
+    private fun bytesPerPixel(config: Config): Int {
         return when (config) {
-            android.graphics.Bitmap.Config.ARGB_8888 -> 4
-            android.graphics.Bitmap.Config.RGB_565, android.graphics.Bitmap.Config.ARGB_4444 -> 2
-            android.graphics.Bitmap.Config.ALPHA_8 -> 1
+            Config.ARGB_8888 -> 4
+            Config.RGB_565, Config.ARGB_4444 -> 2
+            Config.ALPHA_8 -> 1
             else -> 1
         }
     }
@@ -104,12 +103,11 @@ internal actual class BitmapDataPool(
     companion object {
 
         /**
-         * Create a new [BitmapDataPool] object.
+         * Creates a new [BitmapDataPool] object.
          */
         @JvmStatic
         fun newInstance(): BitmapDataPool {
-            val bitmapsSet: MutableSet<SoftReference<Bitmap>> = HashSet()
-            return BitmapDataPool(bitmapsSet)
+            return BitmapDataPool(HashSet())
         }
     }
 }

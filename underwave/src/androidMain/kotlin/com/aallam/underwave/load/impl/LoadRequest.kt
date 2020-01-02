@@ -11,13 +11,12 @@ import java.lang.ref.WeakReference
  */
 internal actual class LoadRequest(
     internal val imageUrl: String,
-    internal val imageView: WeakReference<ImageView>
+    internal val imageView: WeakReference<ImageView>,
+    internal val job: Job = Job()
 ) : Request {
 
-    internal val job: Job = Job()
-
     override fun cancel() {
-        if (job.isActive) {
+        if (job.isActive) { // if the job is active (running) cancel it
             log("cancel request: $imageUrl")
             job.cancel()
         }

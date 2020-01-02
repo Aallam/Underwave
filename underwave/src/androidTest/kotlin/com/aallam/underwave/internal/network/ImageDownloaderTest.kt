@@ -1,65 +1,47 @@
 package com.aallam.underwave.internal.network
 
-import com.aallam.underwave.internal.image.Dimension
-import com.aallam.underwave.internal.image.ImageView
-import com.aallam.underwave.internal.cache.ImageCache
-import com.aallam.underwave.internal.async.dispatcher.impl.SourceExecutor
+import com.aallam.underwave.extension.MainCoroutineRule
+import com.aallam.underwave.extension.runBlocking
+import com.aallam.underwave.internal.image.Bitmap
+import com.aallam.underwave.internal.network.impl.BitmapHttpClient
 import com.aallam.underwave.internal.network.impl.ImageDownloader
-import com.aallam.underwave.internal.view.ViewManager
-import com.aallam.underwave.load.impl.LoadRequest
 import io.mockk.MockKAnnotations
-import io.mockk.Runs
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
-import io.mockk.just
 import io.mockk.mockk
 import io.mockk.unmockkAll
-import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import java.lang.ref.WeakReference
-import java.util.concurrent.Future
 import kotlin.test.assertEquals
 
-internal class ImageDownloaderTest {
+@ExperimentalCoroutinesApi
+internal actual class ImageDownloaderTest {
 
-    @MockK
-    lateinit var executorService: SourceExecutor
-    @MockK
-    lateinit var imageCache: ImageCache
-    @MockK
-    lateinit var viewManager: ViewManager
-    @MockK
-    lateinit var dimension: Dimension
-    @MockK
-    lateinit var imageView: WeakReference<ImageView>
+    @get:Rule
+    val coroutineRule = MainCoroutineRule()
 
-    private val loadRequest: LoadRequest
-        get() = LoadRequest("URL", imageView)
-
-    private val downloader: Downloader
-        get() = ImageDownloader(imageCache, viewManager, executorService)
+    private lateinit var downloader: ImageDownloader
+    @MockK
+    lateinit var bitmapHttpClient: BitmapHttpClient
 
     @Before
     fun init() {
         MockKAnnotations.init(this)
+        downloader = ImageDownloader(bitmapHttpClient)
     }
 
     @Test
-    fun testDownload() {
-        val request = loadRequest
-        val req = mockk<Future<*>>()
-        every { executorService.submit(any()) } returns req
-        downloader.download(request, dimension)
-        assertEquals(req, request.request)
-    }
-
-    @Test
-    fun testShutdown() {
-        every { executorService.shutdown() } just Runs
-        downloader.shutdown()
-        verify { executorService.shutdown() }
+    actual fun testDownload() = coroutineRule.runBlocking {
+        val url = "URL"
+        val bitmap = mockk<Bitmap>()
+        coEvery { bitmapHttpClient.get(url) } returns bitmap
+        val result = downloader.download(url)
+        coVerify { bitmapHttpClient.get(url) }
+        assertEquals(bitmap, result)
     }
 
     @After

@@ -9,6 +9,9 @@ import com.aallam.underwave.internal.image.Bitmap
  * a value is accessed, it is moved to the head of a queue. When a value is
  * added to a full cache, the value at the end of that queue is evicted and may
  * become eligible for garbage collection.
+ *
+ * @param size cache size
+ * @param bitmapPool pool of bitmaps to be reused
  */
 internal actual class BitmapLruCache actual constructor(
     size: Int,
@@ -27,17 +30,6 @@ internal actual class BitmapLruCache actual constructor(
     ) {
         oldValue?.let { bitmap ->
             bitmapPool.put(bitmap)
-        }
-    }
-
-    companion object {
-
-        /**
-         * Create a new [BitmapLruCache] object.
-         */
-        @JvmStatic
-        fun newInstance(size: Int, bitmapPool: BitmapPool): BitmapLruCache {
-            return BitmapLruCache(size, bitmapPool)
         }
     }
 }

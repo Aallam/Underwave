@@ -1,82 +1,88 @@
 package com.aallam.underwave.internal.view
 
 import android.os.Handler
+import com.aallam.underwave.extension.MainCoroutineRule
+import com.aallam.underwave.extension.runBlocking
+import com.aallam.underwave.internal.cache.memory.bitmap.BitmapPool
 import com.aallam.underwave.internal.image.Bitmap
 import com.aallam.underwave.internal.image.Dimension
 import com.aallam.underwave.internal.image.ImageView
 import com.aallam.underwave.internal.image.dimension
-import com.aallam.underwave.internal.image.scale
 import com.aallam.underwave.internal.view.impl.ImageViewManager
 import com.aallam.underwave.load.impl.LoadRequest
 import io.mockk.MockKAnnotations
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import java.lang.ref.WeakReference
 
-internal class ViewManagerTest {
+@ExperimentalCoroutinesApi
+internal actual class ViewManagerTest {
 
-    @MockK
-    lateinit var display: Dimension
+    @get:Rule
+    val coroutineRule = MainCoroutineRule()
+
+    lateinit var viewManager: ViewManager
     @RelaxedMockK
     lateinit var viewMap: MutableMap<ImageView, String>
     @RelaxedMockK
     lateinit var handler: Handler
     @RelaxedMockK
-    lateinit var dimension: Dimension
+    lateinit var bitmapPool: BitmapPool
+    @RelaxedMockK
+    lateinit var loader: Loader
     @RelaxedMockK
     lateinit var imageView: ImageView
-    @RelaxedMockK
-    lateinit var bitmap: Bitmap
-
-    private val imageURL = "URL"
-
-    private val imageViewRef: WeakReference<ImageView>
-        get() = WeakReference(imageView)
-
-    private val loadRequest: LoadRequest
-        get() = LoadRequest(imageURL, imageViewRef)
-
-    private val viewManager: ViewManager
-        get() = ImageViewManager(display, viewMap, handler)
 
     @Before
     fun init() {
         MockKAnnotations.init(this)
-        mockkStatic("com.aallam.underwave.image.DimensionKt")
-        mockkStatic("com.aallam.underwave.image.BitmapKt")
+        viewManager = ImageViewManager(viewMap, handler, bitmapPool, loader)
+        mockkStatic("com.aallam.underwave.internal.image.DimensionKt")
     }
 
     @Test
-    fun testLoadBitmapIntoImageView() {
-        every { imageView.dimension } returns dimension
-        every { bitmap.scale(dimension) } returns bitmap
-        every { viewMap[imageView] } returns imageURL
+    actual fun testLoad() = coroutineRule.runBlocking {
+        val loadRequest: LoadRequest = mockk()
+        val bitmap: Bitmap = mockk()
+        val imageViewDimension = Dimension(100, 100)
+        val imageViewRef = WeakReference(imageView)
+        val imageUrl = "URL"
+        every { loadRequest.imageView } returns imageViewRef
+        every { loadRequest.imageUrl } returns imageUrl
+        every { imageView.dimension } returns imageViewDimension
+        every { viewMap[imageView] } returns imageUrl
+        coEvery { loader.scale(bitmap, imageViewDimension, bitmapPool) } returns bitmap
 
-        viewManager.loadBitmapIntoImageView(loadRequest, bitmap)
-
-        verify { bitmap.scale(dimension) }
-        verify { imageView.setImageBitmap(bitmap) }
-    }
-
-    @Test
-    fun testHandler() {
-        every { viewMap[imageView] } returns imageURL
         viewManager.load(loadRequest, bitmap)
+
+        coVerify { loader.scale(bitmap, imageViewDimension, bitmapPool) }
         verify { handler.post(any()) }
     }
 
     @Test
-    fun testViewReused() {
-        every { viewMap[imageView] } returns imageURL
+    actual fun testViewReused() {
+        val imageUrl = "URL"
+        val loadRequest: LoadRequest = mockk()
+        val imageViewRef = WeakReference(imageView)
+        every { viewMap[imageView] } returns imageUrl
+        every { loadRequest.imageView } returns imageViewRef
+        every { loadRequest.imageUrl } returns imageUrl
+
         viewManager.isViewReused(loadRequest)
+
         verify { viewMap[imageView] }
+        verify { loadRequest.imageView }
     }
 
     @After

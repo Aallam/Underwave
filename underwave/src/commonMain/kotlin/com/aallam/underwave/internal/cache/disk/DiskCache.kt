@@ -1,7 +1,7 @@
 package com.aallam.underwave.internal.cache.disk
 
-import com.aallam.underwave.internal.image.Bitmap
 import com.aallam.underwave.internal.cache.Cache
+import com.aallam.underwave.internal.image.Bitmap
 
 /**
  * Disk [Cache] implementation using a bounded amount of space on a filesystem.

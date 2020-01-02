@@ -1,31 +1,32 @@
-package com.aallam.underwave.internal
+package com.aallam.underwave.internal.view.impl
 
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import com.aallam.underwave.internal.async.dispatcher.impl.LoadExecutor
+import com.aallam.underwave.internal.async.UnderwaveDispatchers
 import com.aallam.underwave.internal.cache.memory.bitmap.BitmapPool
+import com.aallam.underwave.internal.image.Bitmap
+import com.aallam.underwave.internal.image.CompressFormat
 import com.aallam.underwave.internal.image.Dimension
+import com.aallam.underwave.internal.view.Loader
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.BufferedInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 
-internal class BitmapLoader(private val dispatcher: CoroutineDispatcher = LoadExecutor.dispatcher) {
+/**
+ * An implementation of [Loader].
+ */
+internal actual class BitmapLoader actual constructor(
+    private val dispatcher: CoroutineDispatcher
+) : Loader {
 
-    suspend fun scale(
+    override suspend fun scale(
         bitmap: Bitmap,
         dimension: Dimension,
         bitmapPool: BitmapPool,
-        format: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
-        onFinish: suspend (Bitmap) -> Unit
-    ): Unit = coroutineScope<Unit> {
-        launch(dispatcher) {
-            bitmap.scale(dimension, bitmapPool, format)?.let {
-                onFinish(it)
-            }
-        }
+        format: CompressFormat
+    ): Bitmap? = withContext(dispatcher) {
+        bitmap.scale(dimension, bitmapPool, format)
     }
 
     /**
@@ -34,7 +35,7 @@ internal class BitmapLoader(private val dispatcher: CoroutineDispatcher = LoadEx
     private fun Bitmap.scale(
         dimension: Dimension,
         bitmapPool: BitmapPool,
-        format: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG
+        format: CompressFormat = CompressFormat.JPEG
     ): Bitmap? {
         if (dimension.isEmpty()) return this
         val stream = ByteArrayOutputStream()
@@ -50,16 +51,14 @@ internal class BitmapLoader(private val dispatcher: CoroutineDispatcher = LoadEx
         return BitmapFactory.Options().run {
             mark(available()) // mark to reset later
             inJustDecodeBounds = true
-            BitmapFactory.decodeStream(this@scale, null, this) // get original bitmap
+            // get original bitmap
+            BitmapFactory.decodeStream(this@scale, null, this)
             inSampleSize = calculateInSampleSize(dimension)
             bitmapPool.addInBitmapOptions(this)
             inJustDecodeBounds = false
             reset()
-            BitmapFactory.decodeStream(
-                this@scale,
-                null,
-                this
-            ) // decode bitmap with inSampleSize set
+            // decode bitmap with inSampleSize set
+            BitmapFactory.decodeStream(this@scale, null, this)
         }
     }
 
@@ -80,5 +79,16 @@ internal class BitmapLoader(private val dispatcher: CoroutineDispatcher = LoadEx
             return inSampleSize
         }
         return 1
+    }
+
+    companion object {
+
+        /**
+         * Create a new [BitmapLoader] object.
+         */
+        @JvmStatic
+        fun newInstance(): BitmapLoader {
+            return BitmapLoader(UnderwaveDispatchers.Default)
+        }
     }
 }

@@ -20,9 +20,14 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
+    packagingOptions {
+        pickFirst("META-INF/kotlinx-coroutines-core.kotlin_module")
+    }
 }
 
 dependencies {
+    implementation(project(":underwave"))
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.14.0")
     implementation("androidx.core:core-ktx:1.1.0")
@@ -31,7 +36,6 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.1.0")
     implementation("androidx.viewpager2:viewpager2:1.0.0")
     implementation("com.google.android.material:material:1.0.0")
-    implementation(project(":underwave"))
 }
 
 configure<SpotlessExtension> {

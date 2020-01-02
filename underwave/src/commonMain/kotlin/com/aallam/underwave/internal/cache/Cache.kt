@@ -13,20 +13,12 @@ internal interface Cache<K, V> {
      * @param key the key to look for.
      * @return the value corresponding to [key] if exists, otherwise, returns null.
      */
-    operator fun get(key: K): V?
+    suspend fun get(key: K): V?
 
     /**
      * Caches [value] for [key]. The value is moved to the head of the queue.
      */
-    fun put(key: K, value: V)
-
-    /**
-     * Checks if a given [key] exists in the cache.
-     *
-     * @param key the key to check if exists.
-     * @return true if the cache contains the given [key], otherwise, returns false.
-     */
-    fun contains(key: String): Boolean
+    suspend fun put(key: K, value: V)
 
     /**
      * Get current cache size
@@ -38,5 +30,5 @@ internal interface Cache<K, V> {
     /**
      * Delete all entries and clear the cache.
      */
-    fun clear()
+    suspend fun clear()
 }

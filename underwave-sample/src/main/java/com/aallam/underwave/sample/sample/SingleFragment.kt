@@ -9,8 +9,13 @@ import com.aallam.underwave.Underwave
 import com.aallam.underwave.sample.R
 import com.aallam.underwave.sample.extension.pokedex
 import kotlinx.android.synthetic.main.fragment_single.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class SingleFragment : Fragment() {
+
+    private val uiScope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -23,10 +28,12 @@ class SingleFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         loadButton.setOnClickListener {
-            context?.let {
-                val pokemon = pokedex.random()
-                pokemonName.text = pokemon.name
-                Underwave.with(it).load(pokemon.image, pokemonImage)
+            context?.let { context ->
+                uiScope.launch {
+                    val pokemon = pokedex.random()
+                    pokemonName.text = pokemon.name
+                    Underwave.with(context).insert(pokemon.image, pokemonImage)
+                }
             }
         }
     }

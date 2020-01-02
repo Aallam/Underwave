@@ -1,31 +1,31 @@
 package com.aallam.underwave.internal.view.impl
 
-import android.content.Context
 import android.os.Handler
-import com.aallam.underwave.internal.BitmapLoader
 import com.aallam.underwave.internal.cache.memory.bitmap.BitmapPool
 import com.aallam.underwave.internal.image.Bitmap
-import com.aallam.underwave.internal.image.Dimension
 import com.aallam.underwave.internal.image.ImageView
 import com.aallam.underwave.internal.image.dimension
+import com.aallam.underwave.internal.view.Loader
 import com.aallam.underwave.internal.view.ViewManager
 import com.aallam.underwave.load.impl.LoadRequest
 import kotlinx.coroutines.coroutineScope
 import java.util.Collections.synchronizedMap
 import java.util.WeakHashMap
 
+/**
+ * A [ViewManager] implementation.
+ */
 internal actual class ImageViewManager(
-    override val display: Dimension,
     override val viewMap: MutableMap<ImageView, String>,
     private val handler: Handler,
     private val bitmapPool: BitmapPool,
-    private val bitmapLoader: BitmapLoader
+    private val loader: Loader
 ) : ViewManager {
 
     override suspend fun load(loadRequest: LoadRequest, bitmap: Bitmap): Unit = coroutineScope {
         if (isViewReused(loadRequest)) return@coroutineScope
         loadRequest.imageView.get()?.let { view ->
-            bitmapLoader.scale(bitmap, view.dimension, bitmapPool) { scaledBitmap ->
+            loader.scale(bitmap, view.dimension, bitmapPool)?.let { scaledBitmap ->
                 postHandler(loadRequest, scaledBitmap)
             }
         }
@@ -54,17 +54,12 @@ internal actual class ImageViewManager(
          * Create a new [ImageViewManager] object.
          */
         @JvmStatic
-        fun newInstance(
-            context: Context,
-            bitmapPool: BitmapPool,
-            bitmapLoader: BitmapLoader
-        ): ImageViewManager {
+        fun newInstance(loader: Loader, pool: BitmapPool): ImageViewManager {
             return ImageViewManager(
-                display = context.resources.displayMetrics.dimension,
                 viewMap = synchronizedMap(WeakHashMap()),
                 handler = Handler(),
-                bitmapPool = bitmapPool,
-                bitmapLoader = bitmapLoader
+                bitmapPool = pool,
+                loader = loader
             )
         }
     }

@@ -54,6 +54,10 @@ android {
         isIncludeAndroidResources = true
         isReturnDefaultValues = true
     }
+
+    libraryVariants.all {
+        generateBuildConfigProvider?.configure { enabled = false }
+    }
 }
 
 kotlin {
@@ -62,13 +66,14 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(kotlin("stdlib-common"))
-                api(Coroutines("core"))
+                api(Coroutines("core-common"))
             }
         }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
+                implementation(Coroutines("core-common"))
                 implementation(Coroutines("test"))
                 implementation(Mockk())
             }
@@ -84,7 +89,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))
-                implementation(Coroutines("test"))
+                implementation(Coroutines("android"))
                 implementation(AndroidTestRunner())
                 implementation(AndroidTestExt())
                 implementation(Robolectric())

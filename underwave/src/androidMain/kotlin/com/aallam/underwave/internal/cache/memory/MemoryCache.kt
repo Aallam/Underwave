@@ -3,7 +3,6 @@ package com.aallam.underwave.internal.cache.memory
 import com.aallam.underwave.internal.cache.Cache
 import com.aallam.underwave.internal.cache.memory.bitmap.BitmapLruCache
 import com.aallam.underwave.internal.cache.memory.bitmap.BitmapPool
-import com.aallam.underwave.internal.extension.kilobytesToBytes
 import com.aallam.underwave.internal.extension.log
 import com.aallam.underwave.internal.image.Bitmap
 
@@ -18,23 +17,19 @@ internal actual class MemoryCache actual constructor(
     private val bitmapLruCache: BitmapLruCache
 ) : Cache<String, Bitmap> {
 
-    override fun get(key: String): Bitmap? {
+    override suspend fun get(key: String): Bitmap? {
         return bitmapLruCache.get(key)
     }
 
-    override fun put(key: String, value: Bitmap) {
+    override suspend fun put(key: String, value: Bitmap) {
         bitmapLruCache.put(key, value)
     }
 
-    override fun contains(key: String): Boolean {
-        return bitmapLruCache.get(key) != null
-    }
-
     override fun size(): Long {
-        return bitmapLruCache.size().kilobytesToBytes
+        return bitmapLruCache.size().toLong()
     }
 
-    override fun clear() {
+    override suspend fun clear() {
         log("clear memory: ${size()} kb")
         bitmapLruCache.evictAll()
         log("clear bitmap pool: ${bitmapPool.size} elements")
@@ -48,7 +43,7 @@ internal actual class MemoryCache actual constructor(
          */
         @JvmStatic
         fun newInstance(bitmapPool: BitmapPool, size: Int): MemoryCache {
-            val bitmapLruCache: BitmapLruCache = BitmapLruCache.newInstance(size, bitmapPool)
+            val bitmapLruCache = BitmapLruCache(size, bitmapPool)
             return MemoryCache(
                 bitmapPool = bitmapPool,
                 bitmapLruCache = bitmapLruCache

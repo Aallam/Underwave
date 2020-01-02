@@ -28,10 +28,8 @@ class UnderwaveSample : Application() {
         )
         StrictMode.setVmPolicy(
             VmPolicy.Builder()
-                .detectLeakedSqlLiteObjects()
-                .detectLeakedClosableObjects()
+                .detectAll()
                 .penaltyLog()
-                .penaltyDeath()
                 .build()
         )
     }
