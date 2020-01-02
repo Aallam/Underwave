@@ -1,4 +1,6 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
+import dependency.kotlinx.Coroutines
+import dependency.lib.DiskLruCache
 import dependency.test.AndroidTestExt
 import dependency.test.AndroidTestRunner
 import dependency.test.Mockk
@@ -60,25 +62,29 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(kotlin("stdlib-common"))
+                api(Coroutines("core"))
             }
         }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
+                implementation(Coroutines("test"))
                 implementation(Mockk())
             }
         }
         val androidMain by getting {
             dependencies {
                 api(kotlin("stdlib-jdk8"))
-                implementation(dependency.lib.DiskLruCache())
+                api(Coroutines("android"))
+                implementation(DiskLruCache())
             }
         }
         val androidTest by getting {
             dependencies {
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))
+                implementation(Coroutines("test"))
                 implementation(AndroidTestRunner())
                 implementation(AndroidTestExt())
                 implementation(Robolectric())

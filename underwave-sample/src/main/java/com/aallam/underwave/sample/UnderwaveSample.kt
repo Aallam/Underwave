@@ -22,8 +22,6 @@ class UnderwaveSample : Application() {
     private fun strictMode() {
         StrictMode.setThreadPolicy(
             ThreadPolicy.Builder()
-                .detectDiskReads()
-                .detectDiskWrites()
                 .detectAll()
                 .penaltyLog()
                 .build()
