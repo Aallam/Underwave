@@ -14,11 +14,5 @@ internal interface Downloader {
      * @param loadRequest load request to be applied.
      * @return cancellable load request
      */
-    fun download(loadRequest: LoadRequest, display: Dimension)
-
-    /**
-     * Initiates an orderly shutdown in which previously submitted
-     * requests are executed, but no new tasks will be accepted.
-     */
-    fun shutdown()
+    suspend fun download(loadRequest: LoadRequest, display: Dimension)
 }

@@ -2,27 +2,29 @@ package com.aallam.underwave.internal
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import com.aallam.underwave.internal.async.dispatcher.impl.LoadExecutor
 import com.aallam.underwave.internal.cache.memory.bitmap.BitmapPool
-import com.aallam.underwave.internal.executor.LoadExecutor
 import com.aallam.underwave.internal.image.Dimension
-import com.aallam.underwave.load.impl.LoadRequest
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import java.io.BufferedInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
-import java.util.concurrent.ExecutorService
 
-internal class BitmapLoader(private val executorService: ExecutorService = LoadExecutor) {
+internal class BitmapLoader(private val dispatcher: CoroutineDispatcher = LoadExecutor.dispatcher) {
 
-    fun scale(
+    suspend fun scale(
         bitmap: Bitmap,
         dimension: Dimension,
         bitmapPool: BitmapPool,
-        loadRequest: LoadRequest,
         format: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
-        onFinish: (Bitmap) -> Unit
-    ) {
-        loadRequest.request = executorService.submit {
-            bitmap.scale(dimension, bitmapPool, format)?.let { onFinish(it) }
+        onFinish: suspend (Bitmap) -> Unit
+    ): Unit = coroutineScope<Unit> {
+        launch(dispatcher) {
+            bitmap.scale(dimension, bitmapPool, format)?.let {
+                onFinish(it)
+            }
         }
     }
 

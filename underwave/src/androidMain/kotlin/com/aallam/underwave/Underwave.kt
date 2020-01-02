@@ -1,12 +1,16 @@
 package com.aallam.underwave
 
 import android.content.Context
+import com.aallam.underwave.internal.async.UnderwaveScope
+import com.aallam.underwave.internal.async.dispatcher.impl.LoadExecutor
 import com.aallam.underwave.internal.cache.ImageCache
 import com.aallam.underwave.internal.image.ImageView
 import com.aallam.underwave.internal.network.Downloader
 import com.aallam.underwave.internal.view.ViewManager
 import com.aallam.underwave.load.Request
 import com.aallam.underwave.load.impl.LoadRequest
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 /**
  * A singleton to present a simple static interface for building requests.
@@ -16,6 +20,8 @@ actual class Underwave internal constructor(
     private val downloader: Downloader,
     private val viewManager: ViewManager
 ) {
+
+    private val scope: CoroutineScope = UnderwaveScope()
 
     /**
      * Load the given image to an [ImageView].
@@ -28,15 +34,19 @@ actual class Underwave internal constructor(
         require(imageUrl.isNotEmpty()) { "Underwave:load - Image Url should not be empty" }
         imageView.setImageResource(0)
         viewManager.viewMap[imageView] = imageUrl
+        return LoadRequest.newInstance(imageUrl, imageView).also(::startLoading)
+    }
 
-        val loadRequest: LoadRequest = LoadRequest.newInstance(imageUrl, imageView)
-
-        imageCache.load(
-            loadRequest,
-            { viewManager.load(loadRequest, it) },
-            { downloader.download(loadRequest, viewManager.display) })
-
-        return loadRequest
+    /**
+     * Start image loading.
+     */
+    private fun startLoading(loadRequest: LoadRequest) {
+        scope.launch(loadRequest.job) {
+            imageCache.load(
+                loadRequest,
+                { viewManager.load(loadRequest, it) },
+                { downloader.download(loadRequest, viewManager.display) })
+        }
     }
 
     /**
@@ -45,16 +55,6 @@ actual class Underwave internal constructor(
     actual fun clear() {
         viewManager.viewMap.clear()
         imageCache.clear()
-    }
-
-    /**
-     * Clears all caches and stops all operations.
-     */
-    @Synchronized
-    actual fun shutdown() {
-        INSTANCE = null
-        downloader.shutdown()
-        clear()
     }
 
     companion object {

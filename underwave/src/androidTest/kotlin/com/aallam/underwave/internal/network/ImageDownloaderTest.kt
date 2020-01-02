@@ -3,7 +3,7 @@ package com.aallam.underwave.internal.network
 import com.aallam.underwave.internal.image.Dimension
 import com.aallam.underwave.internal.image.ImageView
 import com.aallam.underwave.internal.cache.ImageCache
-import com.aallam.underwave.internal.executor.SourceExecutor
+import com.aallam.underwave.internal.async.dispatcher.impl.SourceExecutor
 import com.aallam.underwave.internal.network.impl.ImageDownloader
 import com.aallam.underwave.internal.view.ViewManager
 import com.aallam.underwave.load.impl.LoadRequest

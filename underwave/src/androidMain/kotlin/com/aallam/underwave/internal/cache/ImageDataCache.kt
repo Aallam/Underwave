@@ -4,10 +4,12 @@ import android.content.Context
 import com.aallam.underwave.internal.cache.disk.DiskDataCache
 import com.aallam.underwave.internal.cache.memory.MemoryCache
 import com.aallam.underwave.internal.cache.memory.bitmap.BitmapPool
-import com.aallam.underwave.internal.executor.SourceExecutor
+import com.aallam.underwave.internal.async.dispatcher.impl.SourceExecutor
 import com.aallam.underwave.internal.extension.bytesToKilobytes
 import com.aallam.underwave.internal.image.Bitmap
 import com.aallam.underwave.load.impl.LoadRequest
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 /**
  * Image cache repository.
@@ -32,26 +34,27 @@ internal actual class ImageDataCache actual constructor(
         }
     }
 
-    override fun load(
+    override suspend fun load(
         loadRequest: LoadRequest,
-        onSuccess: (Bitmap) -> Unit,
-        onFailure: () -> Unit
-    ) {
+        onSuccess: suspend (Bitmap) -> Unit,
+        onFailure: suspend () -> Unit
+    ): Unit = coroutineScope {
         val url = loadRequest.imageUrl
-        val bitmap = memoryCache[url]
-        loadRequest.request = SourceExecutor.submit {
-            bitmap?.let {
-                onSuccess(it)
-            } ?: fromDisk(url)?.let {
-                onSuccess(it)
-            } ?: onFailure()
-        }
+        memoryCache[url]?.let {
+            onSuccess(it)
+        } ?: fromDisk(url, onSuccess, onFailure)
     }
 
-    private fun fromDisk(url: String): Bitmap? {
-        return diskCache[url]?.let { bitmap ->
-            memoryCache.put(url, bitmap)
-            return@let bitmap
+    private suspend fun fromDisk(
+        url: String,
+        onSuccess: suspend (Bitmap) -> Unit,
+        onFailure: suspend () -> Unit
+    ): Unit = coroutineScope<Unit> {
+        launch(SourceExecutor.dispatcher) {
+            diskCache[url]?.let { bitmap ->
+                memoryCache.put(url, bitmap)
+                onSuccess(bitmap)
+            } ?: onFailure()
         }
     }
 

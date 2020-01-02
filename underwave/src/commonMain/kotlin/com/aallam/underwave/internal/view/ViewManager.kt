@@ -23,7 +23,7 @@ internal interface ViewManager {
     /**
      * Post to the handler the bitmap loading into the image view operation.
      */
-    fun load(loadRequest: LoadRequest, bitmap: Bitmap)
+    suspend fun load(loadRequest: LoadRequest, bitmap: Bitmap)
 
     /**
      * Check if an image has already has been loaded to the [ImageView] or reused.

@@ -21,9 +21,4 @@ expect class Underwave {
      * Clears as much memory and as possible and disk cache.
      */
     fun clear()
-
-    /**
-     * Clears all caches and stops all operations.
-     */
-    fun shutdown()
 }

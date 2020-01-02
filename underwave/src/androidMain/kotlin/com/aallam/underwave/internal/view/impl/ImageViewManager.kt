@@ -10,6 +10,7 @@ import com.aallam.underwave.internal.image.ImageView
 import com.aallam.underwave.internal.image.dimension
 import com.aallam.underwave.internal.view.ViewManager
 import com.aallam.underwave.load.impl.LoadRequest
+import kotlinx.coroutines.coroutineScope
 import java.util.Collections.synchronizedMap
 import java.util.WeakHashMap
 
@@ -21,10 +22,10 @@ internal actual class ImageViewManager(
     private val bitmapLoader: BitmapLoader
 ) : ViewManager {
 
-    override fun load(loadRequest: LoadRequest, bitmap: Bitmap) {
-        if (isViewReused(loadRequest)) return
+    override suspend fun load(loadRequest: LoadRequest, bitmap: Bitmap): Unit = coroutineScope {
+        if (isViewReused(loadRequest)) return@coroutineScope
         loadRequest.imageView.get()?.let { view ->
-            bitmapLoader.scale(bitmap, view.dimension, bitmapPool, loadRequest) { scaledBitmap ->
+            bitmapLoader.scale(bitmap, view.dimension, bitmapPool) { scaledBitmap ->
                 postHandler(loadRequest, scaledBitmap)
             }
         }

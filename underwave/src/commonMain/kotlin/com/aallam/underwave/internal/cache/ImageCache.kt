@@ -38,5 +38,9 @@ internal interface ImageCache {
     /**
      * Load an image from cache, calls [onSuccess] if exists, otherwise calls [onFailure]
      */
-    fun load(loadRequest: LoadRequest, onSuccess: (Bitmap) -> Unit, onFailure: () -> Unit)
+    suspend fun load(
+        loadRequest: LoadRequest,
+        onSuccess: suspend (Bitmap) -> Unit,
+        onFailure: suspend () -> Unit
+    )
 }
