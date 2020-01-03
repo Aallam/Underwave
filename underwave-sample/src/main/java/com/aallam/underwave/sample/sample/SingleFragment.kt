@@ -12,6 +12,7 @@ import kotlinx.android.synthetic.main.fragment_single.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.serialization.UnstableDefault
 
 class SingleFragment : Fragment() {
 
@@ -25,6 +26,7 @@ class SingleFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_single, container, false)
     }
 
+    @UnstableDefault
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         loadButton.setOnClickListener {
@@ -33,6 +35,7 @@ class SingleFragment : Fragment() {
                     val pokemon = pokedex.random()
                     pokemonName.text = pokemon.name
                     Underwave.with(context).insert(pokemon.image, pokemonImage)
+                    // or use: pokemonImage.insert(pokemon.image)
                 }
             }
         }

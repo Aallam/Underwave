@@ -5,9 +5,11 @@ import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.os.StrictMode.VmPolicy
 import com.aallam.underwave.Underwave
+import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.list
 
+@UnstableDefault
 class UnderwaveSample : Application() {
 
     lateinit var pokedex: List<Pokemon>
@@ -16,7 +18,7 @@ class UnderwaveSample : Application() {
         strictMode()
         super.onCreate()
         this.pokedex = loadPokedex()
-        Underwave.debug(true)
+        Underwave.debugMode(true)
     }
 
     private fun strictMode() {

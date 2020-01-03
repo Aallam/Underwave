@@ -1,6 +1,8 @@
 package com.aallam.underwave
 
 import android.content.Context
+import com.aallam.underwave.internal.DebugConfig
+import com.aallam.underwave.internal.UnderwaveFactory
 import com.aallam.underwave.internal.cache.ImageCache
 import com.aallam.underwave.internal.extension.log
 import com.aallam.underwave.internal.image.Bitmap
@@ -9,6 +11,7 @@ import com.aallam.underwave.internal.network.Downloader
 import com.aallam.underwave.internal.view.ViewManager
 import com.aallam.underwave.load.Request
 import com.aallam.underwave.load.impl.LoadRequest
+import com.aallam.underwave.log.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -105,17 +108,23 @@ actual class Underwave internal constructor(
         }
     }
 
-    companion object {
+    actual companion object {
         @Volatile
         internal var INSTANCE: Underwave? = null
         @Volatile
-        internal var DEBUG = false
+        internal actual var debug: DebugConfig = DebugConfig.Default
 
         /**
-         * Show log debug messages if true.
+         * Enable or disable Underwave's debug mode.
+         *
+         * @param enabled enable the debug mode.
+         * @param logger logging implementation.
          */
-        fun debug(debug: Boolean) {
-            this.DEBUG = debug
+        actual fun debugMode(enabled: Boolean, logger: Logger) {
+            debug = object : DebugConfig {
+                override val enabled = enabled
+                override val logger = logger
+            }
         }
 
         /**
@@ -126,7 +135,7 @@ actual class Underwave internal constructor(
          */
         fun with(context: Context): Underwave {
             return INSTANCE ?: synchronized(this) {
-                INSTANCE ?: UnderwaveBuilder(context).build().also { INSTANCE = it }
+                INSTANCE ?: UnderwaveFactory.create(context).also { INSTANCE = it }
             }
         }
     }

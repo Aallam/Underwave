@@ -13,9 +13,11 @@ import com.aallam.underwave.sample.Pokemon
 import com.aallam.underwave.sample.R
 import com.aallam.underwave.sample.extension.pokedex
 import kotlinx.android.synthetic.main.fragment_item.view.*
+import kotlinx.serialization.UnstableDefault
 
 class ListFragment : Fragment() {
 
+    @UnstableDefault
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -56,6 +58,7 @@ class ItemAdapter(private val values: List<Pokemon>) :
             previousRequest?.cancel()
             this.view.pokeName.text = pokemon.name
             this.previousRequest = view.pokemonImage.load(pokemon.image)
+            // or use: Underwave.with(context).load(pokemon.image, pokemonImage)
         }
     }
 }

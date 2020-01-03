@@ -41,8 +41,8 @@ internal class BitmapHttpClient(
          * Create new [BitmapHttpClient] object.
          */
         @JvmStatic
-        fun newInstance(): BitmapHttpClient {
-            return BitmapHttpClient(UnderwaveDispatchers.IO)
+        fun newInstance(dispatcher: CoroutineDispatcher = UnderwaveDispatchers.IO): BitmapHttpClient {
+            return BitmapHttpClient(dispatcher)
         }
     }
 }

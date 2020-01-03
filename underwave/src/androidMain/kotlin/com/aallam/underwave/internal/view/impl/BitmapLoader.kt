@@ -26,26 +26,20 @@ internal actual class BitmapLoader actual constructor(
         bitmapPool: BitmapPool,
         format: CompressFormat
     ): Bitmap? = withContext(dispatcher) {
-        bitmap.scale(dimension, bitmapPool, format)
-    }
-
-    /**
-     * Scale the bitmap to the given dimensions and compress format.
-     */
-    private fun Bitmap.scale(
-        dimension: Dimension,
-        bitmapPool: BitmapPool,
-        format: CompressFormat = CompressFormat.JPEG
-    ): Bitmap? {
-        if (dimension.isEmpty()) return this
+        if (dimension.isEmpty()) return@withContext bitmap
         val stream = ByteArrayOutputStream()
-        compress(format, 100, stream)
+        bitmap.compress(format, 100, stream)
         val inputStream: BufferedInputStream = stream.toByteArray().inputStream().buffered()
-        return inputStream.scale(dimension, bitmapPool)
+        inputStream.scale(dimension, bitmapPool)
     }
 
     /**
      * Scale a bitmap to the given width and height.
+     *
+     * @param dimension dimension to scape the bitmap to
+     * @param bitmapPool pool to use for memory optimisations
+     * @return scaled bitmap to the given dimensions, if the input stream is null, or cannot be used
+     * to decode a bitmap, the function returns null.
      */
     private fun InputStream.scale(dimension: Dimension, bitmapPool: BitmapPool): Bitmap? {
         return BitmapFactory.Options().run {
