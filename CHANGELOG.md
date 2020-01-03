@@ -11,4 +11,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Caching: Memory and Disk LRU caching
 - Request cancelling capability
  
-[1.0.0]: https://github.com/aallam/underwave/compare/master...develop
+[Unreleased]: https://github.com/aallam/underwave/compare/master...develop

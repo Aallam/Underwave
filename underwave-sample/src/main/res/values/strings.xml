@@ -4,4 +4,6 @@
     <string name="nav_list">List</string>
     <string name="toolbar_clear">Clear Cache</string>
     <string name="toast_clear">Cache Cleared!</string>
+    <string name="random_pokemon">RANDOM POKEMON</string>
+    <string name="unknown_pokemon">\?</string>
 </resources>

@@ -21,14 +21,14 @@
         app:layout_constraintVertical_bias="0.39"
         tools:srcCompat="@tools:sample/avatars" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/loadButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="32dp"
-        android:text="RANDOM POKEMON"
+        android:text="@string/random_pokemon"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -38,7 +38,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
-        android:text="?"
+        android:text="@string/unknown_pokemon"
         android:textSize="36sp"
         app:layout_constraintBottom_toTopOf="@+id/loadButton"
         app:layout_constraintEnd_toEndOf="parent"
