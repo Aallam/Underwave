@@ -1,6 +1,8 @@
 Underwave: Background Image-Loading Library
 ============================================
 
+[![Build Status](https://travis-ci.com/Aallam/Underwave.svg?token=nP2QNDvP3CyhgqiTDFz2&branch=master)](https://travis-ci.com/Aallam/Underwave)
+
 **Underwave** is a simple library to asynchronously download and load images to views, with memory 
 and disk caching, resource pooling, and request cancellation support.
 

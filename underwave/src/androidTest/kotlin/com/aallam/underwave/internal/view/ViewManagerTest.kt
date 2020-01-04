@@ -24,8 +24,11 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import java.lang.ref.WeakReference
 
+@RunWith(RobolectricTestRunner::class)
 @ExperimentalCoroutinesApi
 internal actual class ViewManagerTest {
 
@@ -34,7 +37,7 @@ internal actual class ViewManagerTest {
 
     lateinit var viewManager: ViewManager
     @RelaxedMockK
-    lateinit var viewMap: MutableMap<ImageView, String>
+    lateinit var viewMap: HashMap<ImageView, String>
     @RelaxedMockK
     lateinit var handler: Handler
     @RelaxedMockK
