@@ -1,7 +1,7 @@
 package com.aallam.underwave.extension
 
-import android.widget.ImageView
 import com.aallam.underwave.Underwave
+import com.aallam.underwave.internal.image.ImageView
 import com.aallam.underwave.load.Request
 import kotlinx.coroutines.coroutineScope
 

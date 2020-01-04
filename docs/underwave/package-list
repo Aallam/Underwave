@@ -1,0 +1,8 @@
+$dokka.format:gfm
+$dokka.linkExtension:md
+$dokka.location:com.aallam.underwave.extension$insert(android.widget.ImageView, kotlin.String)com.aallam.underwave.extension/android.widget.-image-view/insert.md
+$dokka.location:com.aallam.underwave.extension$load(android.widget.ImageView, kotlin.String)com.aallam.underwave.extension/android.widget.-image-view/load.md
+com.aallam.underwave
+com.aallam.underwave.extension
+com.aallam.underwave.load
+com.aallam.underwave.log

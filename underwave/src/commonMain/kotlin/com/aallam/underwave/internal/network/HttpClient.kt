@@ -3,7 +3,7 @@ package com.aallam.underwave.internal.network
 /**
  * Client for HTTP requests.
  */
-interface HttpClient<T> {
+internal interface HttpClient<T> {
 
     /**
      * GET Http request to [url].

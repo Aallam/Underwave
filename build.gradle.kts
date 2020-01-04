@@ -7,8 +7,9 @@ buildscript {
     dependencies {
         classpath(kotlin("gradle-plugin", "1.3.61"))
         classpath(kotlin("serialization", "1.3.61"))
-        classpath(dependency.android.AndroidGradlePlugin())
-        classpath(dependency.lib.Spotless())
+        classpath(dependency.plugin.Android())
+        classpath(dependency.plugin.Spotless())
+        classpath(dependency.plugin.Dokka())
     }
 }
 

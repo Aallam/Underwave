@@ -5,11 +5,13 @@ import dependency.test.AndroidTestExt
 import dependency.test.AndroidTestRunner
 import dependency.test.Mockk
 import dependency.test.Robolectric
+import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
     id("com.android.library")
     kotlin("multiplatform")
     id("com.diffplug.gradle.spotless")
+    id("org.jetbrains.dokka")
 }
 
 group = Library.group
@@ -105,6 +107,38 @@ configure<SpotlessExtension> {
         ktlint()
         trimTrailingWhitespace()
         endWithNewline()
+    }
+}
+
+tasks {
+    val dokka by getting(DokkaTask::class) {
+        outputDirectory = "$rootDir/docs"
+        outputFormat = "gfm"
+
+        multiplatform{
+            register("global") {
+                perPackageOption {
+                    includeNonPublic = false
+                    skipDeprecated = false
+                    reportUndocumented = false
+                    skipEmptyPackages = true
+                }
+                perPackageOption {
+                    prefix = "com.aallam.underwave.internal"
+                    suppress = true
+                }
+                perPackageOption {
+                    prefix = "com.aallam.underwave.load.impl"
+                    suppress = true
+                }
+                sourceLink {
+                    path = "src/main/kotlin"
+                    url = "https://github.com/aallam/Underwave/blob/master/src/main/kotlin"
+                    lineSuffix = "#L"
+                }
+            }
+            register("android")
+        }
     }
 }
 
