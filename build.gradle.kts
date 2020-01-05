@@ -10,6 +10,7 @@ buildscript {
         classpath(dependency.plugin.Android())
         classpath(dependency.plugin.Spotless())
         classpath(dependency.plugin.Dokka())
+        classpath(dependency.plugin.Bintray())
     }
 }
 

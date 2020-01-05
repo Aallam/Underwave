@@ -84,6 +84,7 @@ internal actual class BitmapDataPool(
     /**
      * Return the byte usage per pixel of a bitmap based on its configuration.
      */
+    @Suppress("deprecation")
     private fun bytesPerPixel(config: Config): Int {
         return when (config) {
             Config.ARGB_8888 -> 4

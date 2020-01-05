@@ -24,11 +24,18 @@ android {
     packagingOptions {
         pickFirst("META-INF/kotlinx-coroutines-core.kotlin_module")
     }
+
+    buildTypes {
+        val debug by getting {
+            // MPP libraries don't currently get this resolution automatically
+            matchingFallbacks = listOf("release")
+        }
+    }
 }
 
 dependencies {
-    implementation(project(":underwave"))
     implementation(kotlin("stdlib-jdk8"))
+    implementation(project(":underwave")) // implementation("com.aallam.underwave:underwave-android:<version>")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.14.0")
     implementation("androidx.core:core-ktx:1.1.0")
     implementation("androidx.appcompat:appcompat:1.1.0")

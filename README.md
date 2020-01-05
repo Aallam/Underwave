@@ -12,6 +12,13 @@ and disk caching, resource pooling, and request cancellation support.
   <img width="200" height="200" src="static/the_wave.png">
 </p>
 
+Usage
+-----
+To add **Underwave** to your project, add the following line to your `build.gradle`:
+```groovy
+implementation "com.aallam.underwave:underwave-android:<version>"
+```
+
 Quick Start
 -----------
 **Underwave** API is simple and straightforward:

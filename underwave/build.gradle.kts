@@ -12,6 +12,8 @@ plugins {
     kotlin("multiplatform")
     id("com.diffplug.gradle.spotless")
     id("org.jetbrains.dokka")
+    id("maven-publish")
+    id("com.jfrog.bintray")
 }
 
 group = Library.group
@@ -60,10 +62,25 @@ android {
     libraryVariants.all {
         generateBuildConfigProvider?.configure { enabled = false }
     }
+
+    buildTypes {
+        val debug by getting {
+            // MPP libraries don't currently get this resolution automatically
+            matchingFallbacks = listOf("release")
+        }
+    }
 }
 
 kotlin {
-    android()
+    android {
+        publishLibraryVariants("release")
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = JavaVersion.VERSION_1_8.toString()
+            }
+        }
+    }
+
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -114,8 +131,7 @@ tasks {
     val dokka by getting(DokkaTask::class) {
         outputDirectory = "$rootDir/docs"
         outputFormat = "gfm"
-
-        multiplatform{
+        multiplatform {
             register("global") {
                 perPackageOption {
                     includeNonPublic = false
@@ -138,6 +154,26 @@ tasks {
                 }
             }
             register("android")
+        }
+    }
+}
+
+bintray {
+    user = System.getenv("BINTRAY_USER")
+    key = System.getenv("BINTRAY_KEY")
+    publish = true
+    setPublications("metadata", "android")
+    pkg.apply {
+        setLicenses("Apache-2.0")
+        repo = "maven"
+        name = Library.packageName
+        desc = "Background Image-Loading Library"
+        websiteUrl = "https://github.com/aallam/Underwave"
+        issueTrackerUrl = "https://github.com/aallam/Underwave/issues"
+        vcsUrl = "https://github.com/aallam/Underwave.git"
+        version.apply {
+            name = Library.version
+            vcsTag = Library.version
         }
     }
 }
