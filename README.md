@@ -16,7 +16,7 @@ Usage
 -----
 To add **Underwave** to your project, add the following line to your `build.gradle`:
 ```groovy
-implementation "com.aallam.underwave:underwave-android:<version>"
+implementation "com.aallam.underwave:underwave-android:0.1.0"
 ```
 
 Quick Start
