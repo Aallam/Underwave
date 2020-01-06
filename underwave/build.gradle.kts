@@ -73,6 +73,9 @@ android {
 
 kotlin {
     android {
+        mavenPublication {
+            artifactId = Library.artifactAndroid
+        }
         publishLibraryVariants("release")
         compilations.all {
             kotlinOptions {
@@ -162,7 +165,7 @@ bintray {
     user = System.getenv("BINTRAY_USER")
     key = System.getenv("BINTRAY_KEY")
     publish = true
-    setPublications("metadata", "android")
+    setPublications("metadata", "androidRelease")
     pkg.apply {
         setLicenses("Apache-2.0")
         repo = "maven"
