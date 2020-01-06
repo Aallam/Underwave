@@ -7,4 +7,5 @@ object Library : Dependency {
 
     // Maven
     val packageName = "$group:$artifact-android"
+    val artifactAndroid = "$artifact-android"
 }
