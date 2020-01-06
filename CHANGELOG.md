@@ -12,4 +12,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Request cancelling capability
 - Support of coroutines scopes
  
-[0.1.0]: https://github.com/aallam/underwave/releases/tag/v0.0.1
+[0.1.0]: https://github.com/aallam/underwave/releases/tag/v0.1.0
