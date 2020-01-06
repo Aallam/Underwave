@@ -130,6 +130,27 @@ configure<SpotlessExtension> {
     }
 }
 
+bintray {
+    user = System.getenv("BINTRAY_USER")
+    key = System.getenv("BINTRAY_KEY")
+    publish = true
+    setPublications("metadata", "androidRelease")
+    pkg.apply {
+        setLicenses("Apache-2.0")
+        repo = "maven"
+        name = Library.packageName
+        desc = "Background Image-Loading Library"
+        websiteUrl = "https://github.com/aallam/Underwave"
+        issueTrackerUrl = "https://github.com/aallam/Underwave/issues"
+        vcsUrl = "https://github.com/aallam/Underwave.git"
+        version.apply {
+            name = Library.version
+            vcsTag = Library.version
+        }
+    }
+}
+
+
 tasks {
     val dokka by getting(DokkaTask::class) {
         outputDirectory = "$rootDir/docs"
@@ -161,24 +182,15 @@ tasks {
     }
 }
 
-bintray {
-    user = System.getenv("BINTRAY_USER")
-    key = System.getenv("BINTRAY_KEY")
-    publish = true
-    setPublications("metadata", "androidRelease")
-    pkg.apply {
-        setLicenses("Apache-2.0")
-        repo = "maven"
-        name = Library.packageName
-        desc = "Background Image-Loading Library"
-        websiteUrl = "https://github.com/aallam/Underwave"
-        issueTrackerUrl = "https://github.com/aallam/Underwave/issues"
-        vcsUrl = "https://github.com/aallam/Underwave.git"
-        version.apply {
-            name = Library.version
-            vcsTag = Library.version
-        }
-    }
+tasks.register<Copy>("copyDocs") {
+    dependsOn("dokka")
+    from("$rootDir/docs/underwave")
+    into("$rootDir/docs")
+}
+
+tasks.register<Delete>("docs") {
+    dependsOn("copyDocs")
+    delete("$rootDir/docs/underwave")
 }
 
 configurations.create("compileClasspath")
