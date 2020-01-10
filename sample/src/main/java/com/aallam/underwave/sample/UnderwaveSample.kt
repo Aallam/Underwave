@@ -22,14 +22,22 @@ class UnderwaveSample : Application() {
     }
 
     private fun strictMode() {
-        StrictMode.setThreadPolicy(
-            ThreadPolicy.Builder()
+        strictModeThread()
+        strictModeVM()
+    }
+
+    private fun strictModeVM() {
+        StrictMode.setVmPolicy(
+            VmPolicy.Builder()
                 .detectAll()
                 .penaltyLog()
                 .build()
         )
-        StrictMode.setVmPolicy(
-            VmPolicy.Builder()
+    }
+
+    private fun strictModeThread() {
+        StrictMode.setThreadPolicy(
+            ThreadPolicy.Builder()
                 .detectAll()
                 .penaltyLog()
                 .build()
