@@ -1,5 +1,6 @@
 package com.aallam.underwave.internal.cache
 
+import com.aallam.underwave.internal.cache.disk.DiskCache
 import com.aallam.underwave.internal.cache.disk.DiskDataCache
 import com.aallam.underwave.internal.cache.memory.MemoryCache
 
@@ -11,5 +12,5 @@ import com.aallam.underwave.internal.cache.memory.MemoryCache
  */
 internal expect class ImageDataCache(
     memoryCache: MemoryCache,
-    diskCache: DiskDataCache
+    diskCache: DiskCache
 ) : ImageCache

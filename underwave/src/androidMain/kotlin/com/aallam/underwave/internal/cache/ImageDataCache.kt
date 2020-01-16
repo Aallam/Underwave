@@ -1,6 +1,7 @@
 package com.aallam.underwave.internal.cache
 
 import android.content.Context
+import com.aallam.underwave.internal.cache.disk.DiskCache
 import com.aallam.underwave.internal.cache.disk.DiskDataCache
 import com.aallam.underwave.internal.cache.memory.MemoryCache
 import com.aallam.underwave.internal.cache.memory.bitmap.BitmapPool
@@ -15,7 +16,7 @@ import com.aallam.underwave.internal.image.Bitmap
  */
 internal actual class ImageDataCache actual constructor(
     val memoryCache: MemoryCache,
-    val diskCache: DiskDataCache
+    val diskCache: DiskCache
 ) : ImageCache {
 
     override val bitmapPool: BitmapPool
