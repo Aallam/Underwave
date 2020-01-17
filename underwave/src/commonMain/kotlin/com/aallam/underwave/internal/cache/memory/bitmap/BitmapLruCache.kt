@@ -1,5 +1,7 @@
 package com.aallam.underwave.internal.cache.memory.bitmap
 
+import com.aallam.underwave.internal.image.Bitmap
+
 /**
  * Bitmap cache that holds strong references to a limited number of values. Each time
  * a value is accessed, it is moved to the head of a queue. When a value is
@@ -12,4 +14,13 @@ package com.aallam.underwave.internal.cache.memory.bitmap
 internal expect class BitmapLruCache(
     size: Int,
     bitmapPool: BitmapPool
-)
+) {
+
+    fun get(key: String): Bitmap?
+
+    fun put(key: String, value: Bitmap): Bitmap?
+
+    fun size(): Int
+
+    fun evictAll()
+}

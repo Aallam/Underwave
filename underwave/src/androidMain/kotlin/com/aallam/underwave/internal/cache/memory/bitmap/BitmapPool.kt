@@ -11,20 +11,20 @@ internal actual interface BitmapPool {
     /**
      * add bitmap to the pool
      */
-    fun put(bitmap: Bitmap)
+    actual fun put(bitmap: Bitmap)
+
+    /**
+     * Bitmap pool size
+     */
+    actual val size: Int
+
+    /**
+     * Clear the bitmap pool.
+     */
+    actual fun clear()
 
     /**
      * Look for one to use for reusable bitmap and set it in [BitmapFactory.Options.inBitmap].
      */
     fun addInBitmapOptions(options: BitmapFactory.Options)
-
-    /**
-     * Bitmap pool size
-     */
-    val size: Int
-
-    /**
-     * Clear the bitmap pool.
-     */
-    fun clear()
 }

@@ -10,7 +10,7 @@ private const val TAG = "Underwave"
  *
  * @param message the [String] to be logged.
  */
-internal fun log(message: String) {
+internal actual fun log(message: String) {
     if (Underwave.debug.enabled) {
         Underwave.debug.logger.log(Log.DEBUG, TAG, message)
     }
@@ -22,7 +22,7 @@ internal fun log(message: String) {
  * @param message the [String] to log.
  * @param throwable exception to log.
  */
-internal fun log(message: String, throwable: Throwable) {
+internal actual fun log(message: String, throwable: Throwable) {
     if (Underwave.debug.enabled) {
         val stackTrace = Log.getStackTraceString(throwable)
         Underwave.debug.logger.log(Log.DEBUG, TAG, "$message\n$stackTrace")
